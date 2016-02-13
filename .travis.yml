@@ -9,5 +9,4 @@ git:
   depth: 3
 
 after_success:
-  - ./coverage/lcov.info
-  - ./node_modules/coveralls/bin/coveralls.js
+  - ./node_modules/.bin/istanbul cover --report lcovonly ./node_modules/.bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
