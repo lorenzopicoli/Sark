@@ -7,3 +7,6 @@ cache:
     - node_modules
 git:
   depth: 3
+
+after_success:
+  - coveralls
