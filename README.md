@@ -1,15 +1,41 @@
 # Sark
-[![Build Status](https://travis-ci.com/lorenzopicoli/Sark.svg?token=ZjJgrCbpH9r6cSjQKRcw&branch=master)](https://travis-ci.com/lorenzopicoli/Sark) [![Coverage Status](https://coveralls.io/repos/github/lorenzopicoli/Sark/badge.svg?branch=master)](https://coveralls.io/github/lorenzopicoli/Sark?branch=master)
+[![Build Status](https://travis-ci.org/lorenzopicoli/Sark.svg?branch=master)](https://travis-ci.org/lorenzopicoli/Sark) [![Coverage Status](https://coveralls.io/repos/github/lorenzopicoli/Sark/badge.svg?branch=master)](https://coveralls.io/github/lorenzopicoli/Sark?branch=master)
 
 Sark is an application that helps you build an XCode project in your Macbook/iMac from any OS without the use of any applications such as Team Viewer.
 
-# How to use?
+## How to use?
 
-1- Open sark's website on your computer with OS X and select the server option
+### To test
 
-2- Copy the secret key
+- Mocha
+- Istanbul
 
-3- Open sark's website on any other PC and select the client option
+```javascript
+gulp test
+```
 
-4- Paste the secret key
+
+### To run the server as development
+
+- Babel
+- Copy package.json to /dist
+- Copy public folder to /dist
+- Lint
+- Nodemon
+
+```javascript
+gulp dev
+```
+
+### To prepare for a commit
+
+- Lint
+- Test
+- Clean dist folder
+
+```javascript
+gulp commit
+```
+
+
 
