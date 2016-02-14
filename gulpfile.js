@@ -22,7 +22,7 @@ gulp.task('lint', function () {
 });
 
 gulp.task('babel', () =>{
-	var stream = gulp.src([...paths.js, '!gulpfile.js'], { base: '.' })
+	var stream = gulp.src(paths.js.concat(['!gulpfile.js']), { base: '.' })
 		.pipe(plugins.newer('dist'))
 		.pipe(plugins.sourcemaps.init())
 		.pipe(plugins.babel())
