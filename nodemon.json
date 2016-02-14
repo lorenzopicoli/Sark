@@ -1,0 +1,5 @@
+{
+  "events": {
+    "restart": "osascript -e 'display notification \"Server restarted\" with title \"Sark server\"'"
+  }
+}
