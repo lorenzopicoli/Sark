@@ -1,0 +1,91 @@
+.white-font{
+  color:white;
+}
+
+top-well{
+  background-color:#BFBABA;
+}
+
+a.btn.btn-default.center-block{
+  width:200px;
+}
+
+div.btn-group.btn-group-justified{
+  width:300px;
+}
+
+.txt-field{
+  border-color:#BFBABA;
+  border-width:1px;
+  border-radius:3px;
+}
+
+h6.text-center.text-muted{
+  margin-top:-5px;
+}
+
+.btn-default:focus, .btn-default.focus, .btn:focus, .btn.focus{
+  outline:none !important;
+  box-shadow:none !important;
+  border-color:#cecece !important;
+  background-color:#e7e7e7;
+}
+
+li.list-group-item{
+  background-color:#1e2735;
+}
+
+li.list-group-item{
+  border:none;
+}
+
+ul.list-group{
+  max-height:300px;
+  overflow:auto;
+}
+
+.vcenter{
+  display:inline-block;
+  vertical-align:middle;
+  float:none;
+}
+
+.row{
+  margin-left:-15px;
+  margin-right:-15px;
+}
+
+p.text-left.footer-center-info.email.text-left{
+  width:50%;
+}
+
+input.center-block.txt-field{
+  margin-top:30px;
+  box-shadow:none !important;
+  width:200px;
+}
+
+input:focus{
+  outline:none;
+}
+
+div.row{
+  margin-top:30px;
+  margin-bottom:30px;
+}
+
+input.input-sm.txt-field{
+  width:100%;
+  height:100%;
+}
+
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus{
+  border-color:#BFBABA;
+  box-shadow:none;
+  outline:0 none;
+}
+
+div.dropdown{
+  padding-left:10px;
+}
+
