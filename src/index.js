@@ -1,15 +1,31 @@
-import express from "express";
-import http from "http";
+import express from 'express';
+import http from 'http';
 import path from 'path';
-var app = express();
-var server = http.createServer(app).listen(3000);
-var io = require('socket.io').listen(server);
 
-app.use(express.static(__dirname + "/public"));
+var app = express();
+var httpServer = http.createServer(app).listen(3000);
+var io = require('socket.io').listen(httpServer);
+
+var isClientConnected = false;
+
+app.use(express.static(__dirname + '/public'));
 
 app.get('*', function(req, res){
-  res.status(404).send("This page doesn't exists");
+  res.status(404).send('This page doesn\'t exists');
 });
 
-module.exports = app;
-module.exports = server;
+console.log('Server listening on port 3000');
+
+io.on('connection', (socket) =>{
+	isClientConnected = true;
+
+	socket.on('newCommand', (command) =>{
+		executeCommand(command);
+	});
+});
+
+function executeCommand(command){
+	console.log("New command ", command); 
+};
+
+export default {app, httpServer, executeCommand};

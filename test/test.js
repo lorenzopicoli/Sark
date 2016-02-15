@@ -1,22 +1,35 @@
-import httpStatus from 'http-status';
+//Chai
 import chai from 'chai';
 import { expect } from 'chai';
-import app from '../src/index';
-import server from '../src/index';
 import chaiHttp from 'chai-http';
+
+//Sark
+import server from '../src/index';
+
+//Helper
+import httpStatus from 'http-status';
+import assert from 'assert';
+import io from 'socket.io-client';
+import sinon from 'sinon';
 
 chai.use(chaiHttp);
 
+var client;
+var socketURL = 'http://localhost:3000';
+var options ={
+  transports: ['websocket'],
+  'force new connection': true
+};
+
 describe('Sark Tests', () => {
 
-	describe('Server Tests', () =>{
+	after(() =>{
+	    server.httpServer.close();
+	});
 
-		after(function() {
-		    server.close();
-		  });
-
-		it('responds with status 200', (done) =>{
-		  	chai.request(app)
+	describe('Server Reachability', () =>{
+		it('should respond with status 200 for homepage', (done) =>{
+		  	chai.request(server.app)
 		  		.get('/')
 		  		.end(function(err, res){
 		  			expect(res.status).to.equal(200);
@@ -24,30 +37,66 @@ describe('Sark Tests', () => {
 		  		});
 		});
 
-		it('should respond with 404 for any request other than the homepage', (done)=>{
-		  	chai.request(app)
+		it('should respond with status 200 for logged page', (done) =>{
+		  	chai.request(server.app)
+		  		.get('/logged.html')
+		  		.end(function(err, res){
+		  			expect(res.status).to.equal(200);
+		  			done();
+		  		});
+		});
+
+		it('should respond with 404 for any other request', (done)=>{
+		  	chai.request(server.app)
 		  		.get('/anotherPage')
 		  		.end(function(err, res){
 		  			expect(res.status).to.equal(404);
 		  			done();
 		  		});
 		});
+	});
 
-		it('recieves new PC connection', () =>{
+	describe('Socket.io Communication', () =>{
 
+		beforeEach(() =>{
+			client = io.connect(socketURL, options);
+		});
+
+		afterEach(() =>{
+		    client.disconnect();
+		});
+
+		it('recieves new client connection', () =>{
+		    client.on('connect',function(usersName){
+				expect(server.app.isClientConnected).to.equal(true);
+		      	done(); 
+		    });
 		});
 
 		it('recieves new command', () =>{
+			sinon.spy(server.executeCommand);
+
+			client.on('connect', () =>{
+				client.emit('newCommand', "Build");
+
+				client.on('newCommand',function(usersName){
+					assert(server.executeCommand.calledOnce);
+					server.executeCommand.restore();
+			      	done(); 
+			   	});
+			});
+
+
 
 		});
 
-		it('execute new command', () =>{
+		// it('executes new command', () =>{
 
-		});
+		// });
 
-		it('detect terminal updates', () =>{
+		// it('detect terminal updates', () =>{
 
-		});
+		// });
 
 	});
 });
