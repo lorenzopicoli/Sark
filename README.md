@@ -1,3 +1,9 @@
+
+
+<p align="center">
+  <img align="center" src="/src/public/assets/img/logo.png" width="300" height="300">
+</p>
+
 # Sark
 [![Build Status](https://travis-ci.org/lorenzopicoli/Sark.svg?branch=master)](https://travis-ci.org/lorenzopicoli/Sark) [![Coverage Status](https://coveralls.io/repos/github/lorenzopicoli/Sark/badge.svg?branch=master)](https://coveralls.io/github/lorenzopicoli/Sark?branch=master)
 
