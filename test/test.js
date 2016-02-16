@@ -5,6 +5,7 @@ import chaiHttp from 'chai-http';
 
 //Sark
 import server from '../src/index';
+import socket from '../src/server/socket'
 
 //Helper
 import httpStatus from 'http-status';
@@ -14,7 +15,6 @@ import sinon from 'sinon';
 
 chai.use(chaiHttp);
 
-var client;
 var socketURL = 'http://localhost:3000';
 var options ={
   transports: ['websocket'],
@@ -27,7 +27,7 @@ describe('Sark Tests', () => {
 	    server.httpServer.close();
 	});
 
-	describe('Server Reachability', () =>{
+	describe('Server Reachability', (done) =>{
 		it('should respond with status 200 for homepage', (done) =>{
 		  	chai.request(server.app)
 		  		.get('/')
@@ -56,38 +56,31 @@ describe('Sark Tests', () => {
 		});
 	});
 
-	describe('Socket.io Communication', () =>{
+	describe('Socket.io Communication', (done) =>{
 
-		beforeEach(() =>{
-			client = io.connect(socketURL, options);
-		});
+		it('recieves new client connection', (done) =>{
+			var client = io.connect(socketURL, options);
 
-		afterEach(() =>{
-		    client.disconnect();
-		});
-
-		it('recieves new client connection', () =>{
-		    client.on('connect',function(usersName){
-				expect(server.app.isClientConnected).to.equal(true);
+		    client.on('connect',function(){
+				expect(socket.isClientConnected()).to.equal(true);
+				client.disconnect();
 		      	done(); 
 		    });
 		});
 
-		it('recieves new command', () =>{
-			sinon.spy(server.executeCommand);
-
+		it('recieves new command', (done) =>{
+			var client = io.connect(socketURL, options);
+			var spy = sinon.spy();
+			
 			client.on('connect', () =>{
-				client.emit('newCommand', "Build");
+				client.emit('newCommand', "Build", spy);
 
-				client.on('newCommand',function(usersName){
-					assert(server.executeCommand.calledOnce);
-					server.executeCommand.restore();
+				setTimeout(function(){
+					assert(spy.calledOnce);
+					client.disconnect();
 			      	done(); 
-			   	});
-			});
-
-
-
+		       }, 50)
+			});	
 		});
 
 		// it('executes new command', () =>{
