@@ -79,10 +79,11 @@ gulp.task('test', ['babel', 'pre-test'], function () {
   		compilers : { js: compiler },
   		timeout : 5000,
   	}))
-    // Creating the reports after tests ran
     .pipe(plugins.babelIstanbul.writeReports())
-    // Enforce a coverage of at least 90%
-    .pipe(plugins.babelIstanbul.enforceThresholds({ thresholds: { global: 50 } }));
+    .pipe(plugins.babelIstanbul.enforceThresholds({ thresholds: { global: 50 } }))
+    .once('end', function () {
+      process.exit();
+    });;
 });
 
 gulp.task('commit', () => {
