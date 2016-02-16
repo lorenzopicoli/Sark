@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sark</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <div class="well well-sm"><img src="assets/img/logo.png" width="200" height="200" class="center-block"></div>
+    <div class="container">
+        <section></section><span class="text-primary">Configuration: </span>
+        <div class="row">
+            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                <div class="input-group">
+                    <input class="form-control txt-field" type="text" placeholder="Github repository" pattern="^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?" inputmode="url" id="git-field">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="update-git-button">Update </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-2 col-xs-2">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Project file name">
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Configuration - ie. Release">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Scheme">
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                <div class="dropdown" id="device-dropdown">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">Device model <span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu"></ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                <div class="dropdown" id="ios-dropdown">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">iOS Version<span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group btn-group-justified center-block" role="group"><a class="btn btn-default" role="button" href="#">Build </a><a class="btn btn-default" role="button" href="#">Run </a></div>
+    </div>
+    <div class="container"><span class="text-primary">Build logs:</span>
+        <ul class="list-group" id="log-area">
+            <li class="list-group-item"><span class="text-info">[HH:MM:SS] - Welcome to Sark</span></li>
+        </ul>
+    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
