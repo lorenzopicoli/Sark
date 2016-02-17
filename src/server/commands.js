@@ -13,11 +13,6 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
-String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.split(search).join(replacement);
-};
-
 function executeBuild(config, socket, callback){
 	var args = createBuildArgs(config.filename, config.scheme, config.configuration, 'iphonesimulator9.2', config.device, config.ios);
 	var build = spawn('xcodebuild', args);
@@ -27,22 +22,14 @@ function executeBuild(config, socket, callback){
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	xcpretty.stdout.on('data', (data) => {
-		var log = data.toString('utf8');
-		var type = '';
-
-		if(log.indexOf('Build succeed') > -1){
-			type = 'success';
-		}else if(log.indexOf('⚠️') > -1){
-			type = 'warning';
-		}else if(log.indexOf('❌') > -1){
-			type = 'error';
-		}
-		socket.emit('updateLog', {time: '23:23:23', log:log, type:type})
+		socket.emit('updateLog', createLogItemFromData(data))
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	xcpretty.stderr.on('data', (data) => {
-		socket.emit('updateLog', {time: '23:23:23', log:data.toString('utf8'), type:'error'})
+		var item = createLogItemFromData(data);
+		item.type = 'error';
+		socket.emit('updateLog', item)
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
@@ -66,6 +53,32 @@ function getDeviceList(callback){
 //TODO: Pull this info dynamically 
 function getOSList(callback){
 	callback(['9.2']);
+}
+
+//Helpers
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+function getCurrentTime(){
+	var date = new Date();
+	return `${date.getHours()}:${date.getMinutes}:${date.getSeconds}`
+}
+
+function createLogItemFromData(data){
+	var log = data.toString('utf8');
+	var type = '';
+	var time = getCurrentTime();
+
+	if(log.indexOf('Build succeed') > -1){
+		type = 'success';
+	}else if(log.indexOf('⚠️') > -1){
+		type = 'warning';
+	}else if(log.indexOf('❌') > -1){
+		type = 'error';
+	}
+	return {log, type, time};
 }
 
 module.exports = {executeBuild, getDeviceList, getOSList}
