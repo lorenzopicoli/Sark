@@ -2,6 +2,9 @@ import util from 'util'
 import { spawn } from 'child_process'
 import io from './socket'
 import fs from 'fs'
+import parser from './logParser';
+
+const deviceListPath = './logs/deviceList.log'
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -11,7 +14,7 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 		fileType = '-project';
 	}
 
-	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
+	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-destination', `platform=iOS Simulator,name=iPhone 5s,OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
 function executeBuild(config, socket, callback){
@@ -46,21 +49,34 @@ function executeBuild(config, socket, callback){
     }
 }
 
-//TODO: Pull this info dynamically 
-function getDeviceList(callback){
+function getDeviceAndiOSList(callback){
+
+	fs.access(deviceListPath, fs.F_OK, function(err) {
+	    if (!err) {
+	        fs.unlink(deviceListPath, ()=>{
+	        	/* istanbul ignore next: It's being tested directly */
+	        	createDeviceLogFile(()=>{
+	        		parser.parseFile(deviceListPath, callback);
+	        	});
+	        });
+	    } else {
+	    	/* istanbul ignore next: It's being tested directly */
+        	createDeviceLogFile(()=>{
+        		parser.parseFile(deviceListPath, callback);
+        	});
+	    }
+	})
+}
+
+function createDeviceLogFile(callback){
 	var xcrun = spawn('xcrun', ['instruments', '-s']);
-	var logStream = fs.createWriteStream('./deviceList.log', {flags: 'a'});
+	var logStream = fs.createWriteStream(deviceListPath, {flags: 'a'});
 	xcrun.stdout.pipe(logStream);
 	xcrun.stderr.pipe(logStream);
 
 	xcrun.on('close', () =>{
-
+		callback();
 	});
-}
-
-//TODO: Pull this info dynamically 
-function getOSList(callback){
-	callback(['9.2']);
 }
 
 //Helpers
@@ -73,16 +89,16 @@ String.prototype.replaceAll = function(search, replacement) {
 /* istanbul ignore next */
 function getCurrentTime(){
 	var date = new Date();
-	return `${date.getHours()}:${date.getMinutes}:${date.getSeconds}`
+	return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
 
 /* istanbul ignore next */
 function createLogItemFromData(data){
-	var log = data.toString('utf8');
+	var log = data.toString('utf8') + '...';
 	var type = '';
 	var time = getCurrentTime();
 
-	if(log.indexOf('Build succeed') > -1){
+	if(log.indexOf('Build Succeed') > -1){
 		type = 'success';
 	}else if(log.indexOf('⚠️') > -1){
 		type = 'warning';
@@ -92,4 +108,4 @@ function createLogItemFromData(data){
 	return {log, type, time};
 }
 
-module.exports = {executeBuild, getDeviceList, getOSList}
+module.exports = {executeBuild, getDeviceAndiOSList, createDeviceLogFile, deviceListPath}

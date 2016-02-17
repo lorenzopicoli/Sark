@@ -7,12 +7,14 @@ import chaiHttp from 'chai-http';
 import server from '../src/index';
 import socket from '../src/server/socket'
 import commands from '../src/server/commands'
+import parser from '../src/server/logParser'
 
 //Helper
 import httpStatus from 'http-status';
 import assert from 'assert';
 import io from 'socket.io-client';
 import sinon from 'sinon';
+import fs from 'fs';
 
 chai.use(chaiHttp);
 
@@ -87,7 +89,7 @@ describe('Sark Tests', () => {
 					assert(spy.calledOnce);
 					client.disconnect();
 			      	done(); 
-		       }, 50)
+		       }, 100)
 			});	
 		});
 
@@ -114,12 +116,64 @@ describe('Sark Tests', () => {
 					}
 				});
 			});	
+		});
+	});
 
+	describe('Ability to pull information', (done)=>{
+
+		it('should create a new log file', (done)=>{
+			deleteFileIfExists(commands.deviceListPath, () =>{
+				commands.createDeviceLogFile(()=>{
+					doesFileExists(commands.deviceListPath, (result)=>{
+						expect(result).to.equal(true);
+						done();
+					});
+				});
+			});
 		});
 
-		// it('detect terminal updates', () =>{
-
-		// });
-
+		it('should parse file correctly', (done)=>{
+			var expectResult = {
+				ios: ['(9.1)', '(9.2)'], 
+				device: ['iMac de Lorenzo', 
+				'Apple TV 1080p', 
+				'iPad 2', 
+				'iPad Air', 
+				'iPad Air 2', 
+				'iPad Pro', 
+				'iPad Retina', 
+				'iPhone 4s', 
+				'iPhone 5', 
+				'iPhone 5s', 
+				'iPhone 6', 
+				'iPhone 6 Plus', 
+				'iPhone 6s', 
+				'Apple Watch - 38mm', 
+				'iPhone 6s Plus', 
+				'Apple Watch - 42mm']
+			}
+			parser.parseFile('./test/testLog.log', (item)=>{
+				expect(item).to.deep.equal(expectResult);
+				done();
+			});
+		});
 	});
 });
+
+function doesFileExists(path, callback){
+	fs.access(path, fs.F_OK, function(err) {
+	    callback(!err)
+	})
+}
+
+function deleteFileIfExists(path, callback){
+	fs.access(path, fs.F_OK, function(err) {
+	    if (!err) {
+	        fs.unlink(path, ()=>{
+	        	callback()
+	        });
+	    } else {
+	    	callback()
+	    }
+	})
+}

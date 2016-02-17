@@ -10,12 +10,8 @@ module.exports = {
 		io.on('connection', (socket) =>{
 			isClientConnected = true;
 
-			commands.getDeviceList((list)=>{
-				socket.emit('updateDeviceList', list);
-			});
-
-			commands.getOSList((list)=>{
-				socket.emit('updateiOSList', list);
+			commands.getDeviceAndiOSList((item)=>{
+				socket.emit('updateDeviceAndiOSList', item);
 			});
 
 			socket.on('build', (config, callback) =>{
