@@ -1,6 +1,7 @@
 import util from 'util'
 import { spawn } from 'child_process'
 import io from './socket'
+import fs from 'fs'
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -47,7 +48,14 @@ function executeBuild(config, socket, callback){
 
 //TODO: Pull this info dynamically 
 function getDeviceList(callback){
-	callback(['iPhone 4', 'iPhone 4s', 'iPhone 5', 'iPhone 5s', 'iPhone 6', 'iPhone 6 Plus', 'iPhone 6s', 'iPhone 6s Plus']);
+	var xcrun = spawn('xcrun', ['instruments', '-s']);
+	var logStream = fs.createWriteStream('./deviceList.log', {flags: 'a'});
+	xcrun.stdout.pipe(logStream);
+	xcrun.stderr.pipe(logStream);
+
+	xcrun.on('close', () =>{
+
+	});
 }
 
 //TODO: Pull this info dynamically 
