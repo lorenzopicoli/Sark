@@ -56,16 +56,19 @@ function getOSList(callback){
 }
 
 //Helpers
+/* istanbul ignore next */
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
 
+/* istanbul ignore next */
 function getCurrentTime(){
 	var date = new Date();
 	return `${date.getHours()}:${date.getMinutes}:${date.getSeconds}`
 }
 
+/* istanbul ignore next */
 function createLogItemFromData(data){
 	var log = data.toString('utf8');
 	var type = '';
