@@ -13,6 +13,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let sark = UILabel(frame: CGRect(x: self.view.frame.size.width / 2, y: self.view.frame.size.width / 2, width: 100, height: 20))
+        sark.text = "Sark rocks!"
+        view.addSubview(sark);
+        
+        var thisIsAWarning = "";
     }
 
     override func didReceiveMemoryWarning() {
