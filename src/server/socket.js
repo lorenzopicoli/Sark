@@ -1,11 +1,6 @@
-var isClientConnected = false;
+import commands from './commands'
 
-function executeCommand(command, callback){
-	console.log("New command ", command); 
-    if (callback !== undefined) {
-    	callback();
-    }
-}
+var isClientConnected = false;
 
 module.exports = {
 	isClientConnected: ()=>{
@@ -14,8 +9,17 @@ module.exports = {
 	setupListeners: (io) =>{
 		io.on('connection', (socket) =>{
 			isClientConnected = true;
-			socket.on('newCommand', (command, callback) =>{
-				executeCommand(command, callback);
+
+			commands.getDeviceList((list)=>{
+				socket.emit('updateDeviceList', list);
+			});
+
+			commands.getOSList((list)=>{
+				socket.emit('updateiOSList', list);
+			});
+
+			socket.on('build', (config, callback) =>{
+				commands.executeBuild(config, socket, callback);
 			});
 
 		});
