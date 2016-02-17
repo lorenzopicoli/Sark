@@ -1,7 +1,6 @@
 import util from 'util'
 import { spawn } from 'child_process'
 import io from './socket'
-var child;
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -11,27 +10,45 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 		fileType = '-project';
 	}
 
-	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`]
+	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
 
 function executeBuild(config, socket, callback){
 	var args = createBuildArgs(config.filename, config.scheme, config.configuration, 'iphonesimulator9.2', config.device, config.ios);
-	child = spawn('xcodebuild', args)
+	var build = spawn('xcodebuild', args);
+	var xcpretty = spawn('xcpretty');
+	build.stdout.pipe(xcpretty.stdin);
+	build.stderr.pipe(xcpretty.stdin);
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	child.stdout.on('data', (data) => {
-		socket.emit('updateLog', {time: '23:23:23', log:data.toString('utf8'), type:''})
+	xcpretty.stdout.on('data', (data) => {
+		var log = data.toString('utf8');
+		var type = '';
+
+		if(log.indexOf('Build succeed') > -1){
+			type = 'success';
+		}else if(log.indexOf('⚠️') > -1){
+			type = 'warning';
+		}else if(log.indexOf('❌') > -1){
+			type = 'error';
+		}
+		socket.emit('updateLog', {time: '23:23:23', log:log, type:type})
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	child.stderr.on('data', (data) => {
+	xcpretty.stderr.on('data', (data) => {
 		socket.emit('updateLog', {time: '23:23:23', log:data.toString('utf8'), type:'error'})
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	child.on('close', (code) => {
+	xcpretty.on('close', (code) => {
 		if (code !== 0) {
-			console.log(`child process exited with code ${code}`);
+			console.log(`build process exited with code ${code}`);
 		}
 	});
 
