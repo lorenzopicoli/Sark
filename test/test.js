@@ -6,6 +6,7 @@ import chaiHttp from 'chai-http';
 //Sark
 import server from '../src/index';
 import socket from '../src/server/socket'
+import commands from '../src/server/commands'
 
 //Helper
 import httpStatus from 'http-status';
@@ -58,7 +59,7 @@ describe('Sark Tests', () => {
 
 	describe('Socket.io Communication', (done) =>{
 
-		it('recieves new client connection', (done) =>{
+		it('shoud recieve new client connection', (done) =>{
 			var client = io.connect(socketURL, options);
 
 		    client.on('connect',function(){
@@ -68,12 +69,19 @@ describe('Sark Tests', () => {
 		    });
 		});
 
-		it('recieves new command', (done) =>{
+		it('should recieve build command', (done) =>{
 			var client = io.connect(socketURL, options);
 			var spy = sinon.spy();
-			
+			var config = {
+				filename: './XcodeTest/sarktest/sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2'
+			}
+
 			client.on('connect', () =>{
-				client.emit('newCommand', "Build", spy);
+				client.emit('build', config, spy);
 
 				setTimeout(function(){
 					assert(spy.calledOnce);
@@ -83,9 +91,31 @@ describe('Sark Tests', () => {
 			});	
 		});
 
-		// it('executes new command', () =>{
+		it('shoud execute build command', () =>{
+			var client = io.connect(socketURL, options);
+			var spy = sinon.spy();
+			var config = {
+				filename: './XcodeTest/sarktest/sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2'
+			}
 
-		// });
+			client.on('connect', () =>{
+				commands.executeBuild(config, client, spy);
+
+				client.on('updateLog', (item) =>{
+					assert(spy.callCount > 0);
+					if(item.log.indexOf('BUILD SUCCEEDED')){
+						expect(item.tpye).to.equal('');
+						client.disconnect();
+						done();
+					}
+				});
+			});	
+
+		});
 
 		// it('detect terminal updates', () =>{
 
