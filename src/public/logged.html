@@ -24,15 +24,15 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-2 col-xs-2">
-                <input class="input-sm form-control txt-field" type="text" placeholder="Project file name">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Project file name" id="filename-field">
             </div>
             <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3">
-                <input class="input-sm form-control txt-field" type="text" placeholder="Configuration - ie. Release">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Configuration - ie. Release" id="config-field">
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3">
-                <input class="input-sm form-control txt-field" type="text" placeholder="Scheme">
+                <input class="input-sm form-control txt-field" type="text" placeholder="Scheme" id="scheme-field">
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <div class="dropdown" id="device-dropdown">
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="btn-group btn-group-justified center-block" role="group"><a class="btn btn-default" role="button" href="#">Build </a><a class="btn btn-default" role="button" href="#">Run </a></div>
+        <div class="btn-group btn-group-justified center-block" role="group"><a class="btn btn-default" role="button" href="#" id="build-button">Build </a><a class="btn btn-default" role="button" href="#">Run </a></div>
     </div>
     <div class="container"><span class="text-primary">Build logs:</span>
         <ul class="list-group" id="log-area">
