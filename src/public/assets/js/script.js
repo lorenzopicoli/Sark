@@ -1,11 +1,13 @@
+printInfoLog("Attemping to connect...");
+
 var socket = io.connect("http://localhost:3000");
 var currentDevice = ''
 var currentiOS = ''
 var currentSDK = ''
 
+
 socket.on('connect', () =>{
-	console.log('connect');
-	socket.emit('newCommand', "Build");
+	printInfoLog("Connected successfully...");
 });
 
 $('#update-git-button').click(()=>{
@@ -30,15 +32,16 @@ $(".dropdown-menu").on('click', 'li a', function(e){
 });
 
 socket.on('updateDeviceAndiOSList', (item)=>{
-  
+  printInfoLog("Updating device and OS list...");
   addListToDropdown('#device-dropdown', item.device);
   addListToDropdown('#ios-dropdown', item.ios);
+  printInfoLog("We are good to go!");
 
 });
 
 socket.on('updateSdkList', (list)=>{
+  printInfoLog("Updating SDK list...");
   addListToDropdown('#sdk-dropdown', list);
-    
 });
 
 function addListToDropdown(id, list){
@@ -98,16 +101,16 @@ $('#build-button').click((e)=>{
     device: currentDevice,
     ios: currentiOS
   }
-  printBuildInfoLog();
+  printInfoLog("Sending build command to server and waiting for response...");
   socket.emit('build', config);
   e.preventDefault();
 });
 
-function printBuildInfoLog(){
+function printInfoLog(message){
   var item = {
     type: "info",
     time: getCurrentTime(),
-    log: "Sending build command to server and waiting for response..."
+    log: message
   }
   logToScreen(item);
 }
