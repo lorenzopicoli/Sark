@@ -52,6 +52,10 @@ function addListToDropdown(id, list){
 //Log area
 
 socket.on('updateLog', (item)=>{
+  logToScreen(item);
+});
+
+function logToScreen(item){
   var logClass = getFontType(item);
   var $li = $('<li>').prop('class', 'list-group-item');
   var $span = $('<span>').prop('class', logClass);
@@ -60,8 +64,12 @@ socket.on('updateLog', (item)=>{
   
   $('#log-area:last-child').append(
   $li.append(
-  $span)); 
-});
+  $span));
+
+  //Scroll to bottom
+  var element = document.getElementById("log-area");
+  element.scrollTop = element.scrollHeight;
+}
 
     
 function getFontType(item){
@@ -72,6 +80,8 @@ function getFontType(item){
       return "text-danger";
     case "warning":
       return "text-warning";
+    case "info":
+      return "text-info";
     default:
       return "white-font";
   }
@@ -88,6 +98,34 @@ $('#build-button').click((e)=>{
     device: currentDevice,
     ios: currentiOS
   }
+  printBuildInfoLog();
   socket.emit('build', config);
   e.preventDefault();
 });
+
+function printBuildInfoLog(){
+  var item = {
+    type: "info",
+    time: getCurrentTime(),
+    log: "Sending build command to server and waiting for response..."
+  }
+  logToScreen(item);
+}
+
+//Helper
+
+function addPaddingZero(numberString){
+  if(numberString.length < 2){
+    return '0' + numberString;
+  }else{
+    return numberString;
+  }
+}
+
+function getCurrentTime(){
+  var date = new Date();
+  var h = addPaddingZero(date.getHours().toString());
+  var m = addPaddingZero(date.getMinutes().toString());
+  var s = addPaddingZero(date.getSeconds().toString());
+  return `${h}:${m}:${s}`
+}

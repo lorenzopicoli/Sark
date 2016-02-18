@@ -15,15 +15,15 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 		fileType = '-project';
 	}
 
-	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-destination', `platform=iOS Simulator,name=iPhone 5s,OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
+	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
 function executeBuild(config, socket, callback){
-	var args = createBuildArgs(config.filename, config.scheme, config.configuration, 'iphonesimulator9.2', config.device, config.ios);
+	var args = createBuildArgs(config.filename, config.scheme, config.configuration, config.sdk, config.device, config.ios);
 	var build = spawn('xcodebuild', args);
 	var xcpretty = spawn('xcpretty');
 	build.stdout.pipe(xcpretty.stdin);
-
+	
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	xcpretty.stdout.on('data', (data) => {
 		socket.emit('updateLog', createLogItemFromData(data))
@@ -37,7 +37,7 @@ function executeBuild(config, socket, callback){
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	xcpretty.on('close', (code) => {
+	build.on('close', (code) => {
 		if (code !== 0) {
 			console.log(`build process exited with code ${code}`);
 		}
