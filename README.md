@@ -11,6 +11,14 @@ Sark is an application that helps you build an XCode project in your Macbook/iMa
 
 ## How to use?
 
+
+You should always run
+
+```javascript
+npm install
+```
+
+right after download
 ### To test
 
 - Mocha
