@@ -5,6 +5,7 @@ import fs from 'fs'
 import parser from './logParser';
 
 const deviceListPath = './logs/deviceList.log'
+const sdkListPath = './logs/sdkList.log'
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -22,7 +23,6 @@ function executeBuild(config, socket, callback){
 	var build = spawn('xcodebuild', args);
 	var xcpretty = spawn('xcpretty');
 	build.stdout.pipe(xcpretty.stdin);
-	build.stderr.pipe(xcpretty.stdin);
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	xcpretty.stdout.on('data', (data) => {
@@ -30,7 +30,7 @@ function executeBuild(config, socket, callback){
 	});
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	xcpretty.stderr.on('data', (data) => {
+	build.stderr.on('data', (data) => {
 		var item = createLogItemFromData(data);
 		item.type = 'error';
 		socket.emit('updateLog', item)
@@ -68,6 +68,24 @@ function getDeviceAndiOSList(callback){
 	})
 }
 
+function getSdkList(callback){
+	fs.access(sdkListPath, fs.F_OK, function(err) {
+	    if (!err) {
+	        fs.unlink(sdkListPath, ()=>{
+	        	/* istanbul ignore next: It's being tested directly */
+	        	createSdkLogFile(()=>{
+	        		parser.parseSdkFile(sdkListPath, callback);
+	        	});
+	        });
+	    } else {
+	    	/* istanbul ignore next: It's being tested directly */
+        	createSdkLogFile(()=>{
+        		parser.parseSdkFile(sdkListPath, callback);
+        	});
+	    }
+	})
+}
+
 function createDeviceLogFile(callback){
 	var xcrun = spawn('xcrun', ['instruments', '-s']);
 	var logStream = fs.createWriteStream(deviceListPath, {flags: 'a'});
@@ -75,6 +93,17 @@ function createDeviceLogFile(callback){
 	xcrun.stderr.pipe(logStream);
 
 	xcrun.on('close', () =>{
+		callback();
+	});
+}
+
+function createSdkLogFile(callback){
+	var xcodebuild = spawn('xcodebuild', ['-showsdks']);
+	var logStream = fs.createWriteStream(sdkListPath, {flags: 'a'});
+	xcodebuild.stdout.pipe(logStream);
+	xcodebuild.stderr.pipe(logStream);
+
+	xcodebuild.on('close', () =>{
 		callback();
 	});
 }
@@ -87,9 +116,21 @@ String.prototype.replaceAll = function(search, replacement) {
 };
 
 /* istanbul ignore next */
+function addPaddingZero(numberString){
+	if(numberString.length < 2){
+		return '0' + numberString;
+	}else{
+		return numberString;
+	}
+}
+
+/* istanbul ignore next */
 function getCurrentTime(){
 	var date = new Date();
-	return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+	var h = addPaddingZero(date.getHours().toString());
+	var m = addPaddingZero(date.getMinutes().toString());
+	var s = addPaddingZero(date.getSeconds().toString());
+	return `${h}:${m}:${s}`
 }
 
 /* istanbul ignore next */
@@ -108,4 +149,4 @@ function createLogItemFromData(data){
 	return {log, type, time};
 }
 
-module.exports = {executeBuild, getDeviceAndiOSList, createDeviceLogFile, deviceListPath}
+module.exports = {executeBuild, getDeviceAndiOSList, createDeviceLogFile, createSdkLogFile, deviceListPath, getSdkList, sdkListPath}

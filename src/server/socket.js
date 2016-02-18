@@ -14,6 +14,10 @@ module.exports = {
 				socket.emit('updateDeviceAndiOSList', item);
 			});
 
+			commands.getSdkList((list)=>{
+				socket.emit('updateSdkList', list);
+			});
+
 			socket.on('build', (config, callback) =>{
 				commands.executeBuild(config, socket, callback);
 			});

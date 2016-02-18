@@ -121,7 +121,7 @@ describe('Sark Tests', () => {
 
 	describe('Ability to pull information', (done)=>{
 
-		it('should create a new log file', (done)=>{
+		it('should create a new device/os log file', (done)=>{
 			deleteFileIfExists(commands.deviceListPath, () =>{
 				commands.createDeviceLogFile(()=>{
 					doesFileExists(commands.deviceListPath, (result)=>{
@@ -132,9 +132,9 @@ describe('Sark Tests', () => {
 			});
 		});
 
-		it('should parse file correctly', (done)=>{
+		it('should parse device/os file correctly', (done)=>{
 			var expectResult = {
-				ios: ['(9.1)', '(9.2)'], 
+				ios: ['9.1', '9.2'], 
 				device: ['iMac de Lorenzo', 
 				'Apple TV 1080p', 
 				'iPad 2', 
@@ -153,6 +153,33 @@ describe('Sark Tests', () => {
 				'Apple Watch - 42mm']
 			}
 			parser.parseFile('./test/testLog.log', (item)=>{
+				expect(item).to.deep.equal(expectResult);
+				done();
+			});
+		});
+
+		it('should create a new sdk log file', (done)=>{
+			deleteFileIfExists(commands.sdkListPath, () =>{
+				commands.createSdkLogFile(()=>{
+					doesFileExists(commands.sdkListPath, (result)=>{
+						expect(result).to.equal(true);
+						done();
+					});
+				});
+			});
+		});
+
+		it('should parse sdk file correctly', (done)=>{
+			var expectResult = [ 
+				'macosx10.11',
+			  	'iphoneos9.2',
+			  	'iphonesimulator9.2',
+			  	'appletvos9.1',
+			  	'appletvsimulator9.1',
+			  	'watchos2.1',
+			  	'watchsimulator2.1' 
+			  	]
+			parser.parseSdkFile('./test/testSdk.log', (item)=>{
 				expect(item).to.deep.equal(expectResult);
 				done();
 			});

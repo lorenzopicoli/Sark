@@ -16,7 +16,6 @@ function parseFile(path, callback){
 		}
 
 		//Matches the line with the os version regex (it will match (x.x))
-		//TODO: Shouldn't include parenthensis
 		var os = line.match(/\d[.]\d/);
 		if(os != null){
 			iOSList.push(os[0]);
@@ -42,4 +41,30 @@ function parseFile(path, callback){
 	});
 }
 
-module.exports = {parseFile};
+function parseSdkFile(path, callback){
+	var lr = require('readline').createInterface({
+		input: fs.createReadStream(path)
+	});
+	var lineCount = 0;
+	var sdkList = [];
+
+	lr.on('line', function (line) {
+		lineCount++;
+
+		//Would be much faster to just use the regex -sdk\s+?(?<=-sdk\s).* but turns out that javascript doens't
+		//support lookbehind regex. So we match including "-sdk " and remove it later.
+		var sdk = line.match(/-sdk.*/g);
+		if(sdk != null){
+			sdkList.push(sdk[0].replace('-sdk ', ''));
+		}
+	});
+
+	lr.on('close', (data) =>{
+		var newSdkList = sdkList.filter(function(elem, pos) {
+    		return sdkList.indexOf(elem) == pos;
+		})
+		callback(newSdkList);
+	});
+}
+
+module.exports = {parseFile, parseSdkFile};

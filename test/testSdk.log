@@ -1,0 +1,21 @@
+OS X SDKs:
+	OS X 10.11                    	-sdk macosx10.11
+
+iOS SDKs:
+	iOS 9.2                       	-sdk iphoneos9.2
+
+iOS Simulator SDKs:
+	Simulator - iOS 9.2           	-sdk iphonesimulator9.2
+
+tvOS SDKs:
+	tvOS 9.1                      	-sdk appletvos9.1
+
+tvOS Simulator SDKs:
+	Simulator - tvOS 9.1          	-sdk appletvsimulator9.1
+
+watchOS SDKs:
+	watchOS 2.1                   	-sdk watchos2.1
+
+watchOS Simulator SDKs:
+	Simulator - watchOS 2.1       	-sdk watchsimulator2.1
+

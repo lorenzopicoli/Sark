@@ -59,7 +59,7 @@ gulp.task('copy-public', () => {
 });
 
 gulp.task('clean', () =>{
-	var stream = del(['dist/**', 'coverage/**', 'logs/**'])
+	var stream = del(['dist/**', 'coverage/**', '!logs/.gitignore'])
 	return stream
 });
 

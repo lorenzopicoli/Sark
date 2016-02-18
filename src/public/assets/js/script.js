@@ -1,6 +1,7 @@
 var socket = io.connect("http://localhost:3000");
 var currentDevice = ''
 var currentiOS = ''
+var currentSDK = ''
 
 socket.on('connect', () =>{
 	console.log('connect');
@@ -16,33 +17,37 @@ $(".dropdown-menu").on('click', 'li a', function(e){
   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
   $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
   
-  if($(this).parents('.dropdown').eq(0).prop('id') == 'device-dropdown'){
+  var id = $(this).parents('.dropdown').eq(0).prop('id')
+  
+  if(id == 'device-dropdown'){
     currentDevice = $(this).text();
-  }else{
+  }else if(id == 'ios-dropdown'){
     currentiOS = $(this).text();
+  }else{
+    currentSDK = $(this).text();                      
   }
   e.preventDefault();
 });
 
-socket.on('updateDeviceList', (list)=>{
+socket.on('updateDeviceAndiOSList', (item)=>{
+  
+  addListToDropdown('#device-dropdown', item.device);
+  addListToDropdown('#ios-dropdown', item.ios);
 
+});
+
+socket.on('updateSdkList', (list)=>{
+  addListToDropdown('#sdk-dropdown', list);
+    
+});
+
+function addListToDropdown(id, list){
   list.forEach((device)=>{
-    $('#device-dropdown').children('ul').eq(0).append(
+    $(id).children('ul').eq(0).append(
     $('<li>').append(
     $('<a>').prop({'text':device, 'href': '#'})));
   });
-    
-});
-
-socket.on('updateiOSList', (list)=>{
-
-  list.forEach((device)=>{
-    $('#ios-dropdown').children('ul').eq(0).append(
-    $('<li>').append(
-    $('<a>').prop('text', device)));
-  });
-    
-});
+}
 
 //Log area
 
@@ -79,6 +84,7 @@ $('#build-button').click((e)=>{
     filename: $('#filename-field').prop('value'),
     configuration: $('#config-field').prop('value'),
     scheme: $('#scheme-field').prop('value'),
+    sdk: currentSDK,
     device: currentDevice,
     ios: currentiOS
   }
