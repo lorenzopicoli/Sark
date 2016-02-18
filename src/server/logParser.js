@@ -17,7 +17,7 @@ function parseFile(path, callback){
 
 		//Matches the line with the os version regex (it will match (x.x))
 		//TODO: Shouldn't include parenthensis
-		var os = line.match(/[(]{1}\d[.]\d[)]/);
+		var os = line.match(/\d[.]\d/);
 		if(os != null){
 			iOSList.push(os[0]);
 		}
@@ -26,7 +26,7 @@ function parseFile(path, callback){
 		var device = line.match(/[a-zA-Z].+?(?=\s\(|\s\[)/g);
 		if(device != null){
 			device.forEach((item)=>{
-			deviceList.push(item);
+				deviceList.push(item);
 			});
 		}
 	});
