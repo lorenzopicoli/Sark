@@ -9,6 +9,8 @@
 
 Sark is an application that helps you build an XCode project in your Macbook/iMac from any OS without the use of any applications such as Team Viewer.
 
+#WARNING: THIS IS UNDER DEVELOPMENT, DO NOT USE! (We are open for PR's though)
+
 ## What does Sark needs to run?
 
 - [XCPretty](https://github.com/supermarin/xcpretty)
