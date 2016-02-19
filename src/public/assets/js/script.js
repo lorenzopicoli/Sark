@@ -1,6 +1,6 @@
 printInfoLog("Attemping to connect...");
 
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://192.168.25.8:3000");
 var currentDevice = ''
 var currentiOS = ''
 var currentSDK = ''
@@ -11,7 +11,7 @@ socket.on('connect', () =>{
 });
 
 $('#update-git-button').click(()=>{
-  alert('Update git!!!');
+  socket.emit('cloneRequest', $('#git-field').prop('value'));
 });
 
 //Dropdown menu itens

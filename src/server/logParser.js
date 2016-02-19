@@ -30,6 +30,7 @@ function parseFile(path, callback){
 		}
 	});
 
+	//Filter duplicates and send data through callback
 	lr.on('close', (data) =>{
 		var newiOSList = iOSList.filter(function(elem, pos) {
     		return iOSList.indexOf(elem) == pos;

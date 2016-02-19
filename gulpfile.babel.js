@@ -68,7 +68,7 @@ gulp.task('clean', () =>{
 gulp.task('dev', ['babel', 'copy', 'copy-public', 'lint'], function () {
 	var stream = plugins.nodemon({ script: './dist/src/index.js'
 	      , ext: 'html js'
-	      ,	ignore: ['node_modules/**/*.js', 'dist/**/*.*']
+	      ,	ignore: ['node_modules/**/*.js', 'dist/**/*.*', 'git/*']
 	      , tasks: ['copy', 'copy-public', 'babel', 'lint']})
     return stream
 })

@@ -1,4 +1,5 @@
 import commands from './commands'
+import gitManager from './gitManager'
 
 var isClientConnected = false;
 
@@ -19,9 +20,14 @@ module.exports = {
 			});
 
 			socket.on('build', (config, callback) =>{
-				commands.executeBuild(config, socket, callback);
+				gitManager.pull(socket, ()=>{
+					commands.executeBuild(config, socket, callback);
+				});
 			});
 
+			socket.on('cloneRequest', (url)=>{
+				gitManager.clone(url, socket);
+			});
 		});
 	}
 };
