@@ -3,79 +3,68 @@ import rmdirAsync from './removeDirContent';
 import fs from 'fs';
 import path from 'path';
 var repository;
+var GITHUB_TOKEN;
+
 function prepareForClone(callback){
 	rmdirAsync('./git/', ()=>{
 		fs.mkdir('./git/', callback);
 	});
 }
 
-function clone(repo, socket){
-	prepareForClone(()=>{
-		// simpleGit.outputHandler(function (command, stdout, stderr) {
-	 //        stdout.on('data', (data)=>{
-	 //        	socket.emit('gitUpdate', data.toString('utf8'));
-	 //        	console.log('DATA', data.toString('utf8'));
-	 //        });
-	 //        stderr.on('data', (data)=>{
-	 //        	socket.emit('gitUpdate', data.toString('utf8'));
-	 //        	console.log('DATA', data.toString('utf8'));
+function clone(repo, token, callback){
+	GITHUB_TOKEN = token;
+	var options = {fetchOpts: {
+	        		callbacks: {
+	         			certificateCheck: function() {
+	            			// github will fail cert check on some OSX machines
+	            			// this overrides that check
+	           		 	return 1;
+	          			},
+	          			
+	          			/* istanbul ignore next */
+	        			credentials: function(url, userName) {
+        					return Git.Cred.userpassPlaintextNew(token, "x-oauth-basic");
+	        			}
+	        		}}
+	        	};
 
-	 //        });
-	 //     })
-		// .clone(repo, './', (err, update)=>{
-		// 	var success = !err;
-		// 	if(success){
-		// 		socket.emit('gitUpdate', "Cloned successfully");
-		// 	}else{
-		// 		socket.emit('gitUpdate', "Ops, something went wrong when trying to clone repo. Try again!");
-		// 	}
-		// });
+	prepareForClone(()=>{
+		//I think this isn't the best way to handle an exception, BUT here are the facts
+		//Other libraries I tested would propmt git username and password whenever the requested
+		//repo didn't exist. This kinda of behavior isn't acceptable because the user wouldn't 
+		//have access to the machine, BUT this library (nodegit) would raise an execption!
+		//BUT I couldn't handle it except this way... So there we go. It works(!) so why change it?
+		/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 		process.on('uncaughtException', function(err) {
 			if(err.Error = 'authentication required but no callback set'){
-				console.log('HAHA! FUCK YOU!!!!')
+				if(callback !== null && callback !== undefined){
+					callback({type:'error', log:"Something went wrong, are you sure the URL is correct?"});
+					callback = null;
+				}
+				return;
 			}else{
 				throw err;
 			}
 		})
-		Git.Clone(repo, './git', {
-	      fetchOpts: {
-	        callbacks: {
-	          certificateCheck: function() {
-	            // github will fail cert check on some OSX machines
-	            // this overrides that check
-	            console.log('AHA!');
-
-	            return 1;
-	          }
-	        }
-	      }}).done(()=>{console.log('Cloned?')});
+		/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+		Git.Clone(repo, './git', options).done((repo)=>{
+			//Sometimes callback would be called here and on the error handler
+			if(callback !== null && callback !== undefined){
+	  			callback({type:'success', log:"Cloned successfully"});
+				callback = null;
+			}
+	    });
 })}
 
-function pull(socket, callback){
-	// simpleGit.outputHandler(function (command, stdout, stderr) {
- //        stdout.on('data', (data)=>{
- //        	socket.emit('gitUpdate', data.toString('utf8'));
- //        });
- //        stderr.on('data', (data)=>{
- //        	socket.emit('gitUpdate', data.toString('utf8'));
- //        });
- //     })
-	// .pull(function(err, update) {
-	// 	var success = !err;
-	// 	if(success){
-	// 		socket.emit('gitUpdate', "Pulled new code successfully");
-	// 	}else{
-	// 		socket.emit('gitUpdate', "Ops, something went wrong when trying to pull changes. Try again!");
-	// 	}
-	// 	callback();
-	// })
-	console.log(path.resolve(__dirname, '../../../git/'));
-Git.Repository.open(path.resolve(__dirname, '../../../git/'))
+function pull(callback){
+
+Git.Repository.open('./git/')
   .then(function(repo) {
     repository = repo;
 
     return repository.fetchAll({
       callbacks: {
+      	/* istanbul ignore next */
         credentials: function(url, userName) {
           return Git.Cred.sshKeyFromAgent(userName);
         },
@@ -91,9 +80,12 @@ Git.Repository.open(path.resolve(__dirname, '../../../git/'))
     return repository.mergeBranches("master", "origin/master");
   })
   .done(function() {
-    console.log("Done!");
+		if(callback !== null && callback !== undefined){
+			callback({type:'success', log:"Pull done"});
+			callback = null;
+		}
   });
-  }
+}
 
 module.exports = {clone, pull};
 

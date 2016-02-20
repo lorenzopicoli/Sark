@@ -3,6 +3,7 @@ var rmdirAsync = function(path, callback) {
 	fs.readdir(path, function(err, files) {
 		if(err) {
 			// Pass the error on to callback
+			/* istanbul ignore next */
 			callback(err, []);
 			return;
 		}
@@ -27,6 +28,7 @@ var rmdirAsync = function(path, callback) {
 			var curPath = path + "/" + file;
 			fs.lstat(curPath, function(err, stats) {
 				if( err ) {
+					/* istanbul ignore next */
 					callback(err, []);
 					return;
 				}

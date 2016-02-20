@@ -20,13 +20,18 @@ module.exports = {
 			});
 
 			socket.on('build', (config, callback) =>{
-				gitManager.pull(socket, ()=>{
+				socket.emit('gitUpdate', {type:'info', log:"Trying to pull changes..."});
+				gitManager.pull((item)=>{
+					socket.emit('gitUpdate', item);
 					commands.executeBuild(config, socket, callback);
 				});
 			});
 
-			socket.on('cloneRequest', (url)=>{
-				gitManager.clone(url, socket);
+			socket.on('cloneRequest', (item)=>{
+				socket.emit('gitUpdate', {type:'info', log:"Starting clone request..."});
+				gitManager.clone(item.url, item.token, (item)=>{
+					socket.emit('gitUpdate', item);
+				})
 			});
 		});
 	}

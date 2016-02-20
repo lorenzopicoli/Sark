@@ -5,9 +5,10 @@ import chaiHttp from 'chai-http';
 
 //Sark
 import server from '../src/index';
-import socket from '../src/server/socket'
-import commands from '../src/server/commands'
-import parser from '../src/server/logParser'
+import socket from '../src/server/socket';
+import commands from '../src/server/commands';
+import parser from '../src/server/logParser';
+import gitManager from '../src/server/gitManager';
 
 //Helper
 import httpStatus from 'http-status';
@@ -57,9 +58,6 @@ describe('Sark Tests', () => {
 		  			done();
 		  		});
 		});
-	});
-
-	describe('Socket.io Communication', (done) =>{
 
 		it('shoud recieve new client connection', (done) =>{
 			var client = io.connect(socketURL, options);
@@ -70,12 +68,41 @@ describe('Sark Tests', () => {
 		      	done(); 
 		    });
 		});
+	});
+
+
+	describe('Github integration', (done)=>{
+		it('should clone test repository', (done)=>{
+
+			var client = io.connect(socketURL, options);
+			client.on('connect', ()=>{
+				gitManager.clone('https://github.com/lorenzopicoli/SarkTestProj.git', '', (item)=>{
+					expect(item.type).to.equal('success');
+					client.disconnect();
+					done();
+				});
+			});
+		});
+
+		it('should pull test repository', (done)=>{
+
+			var client = io.connect(socketURL, options);
+			client.on('connect', ()=>{
+				gitManager.pull((item)=>{
+					expect(item.type).to.equal('success');
+					client.disconnect();
+					done();
+				});
+			});	
+		});
+	});
+
+	describe('Socket.io Communication', (done) =>{
 
 		it('should recieve build command', (done) =>{
 			var client = io.connect(socketURL, options);
-			var spy = sinon.spy();
 			var config = {
-				filename: './XcodeTest/sarktest/sarktest.xcodeproj',
+				filename: 'sarktest.xcodeproj',
 				configuration: 'Debug',
 				scheme: 'sarktest',
 				device: 'iPhone 6s',
@@ -83,13 +110,27 @@ describe('Sark Tests', () => {
 			}
 
 			client.on('connect', () =>{
-				client.emit('build', config, spy);
-
-				setTimeout(function(){
-					assert(spy.calledOnce);
+				client.emit('build', config, ()=>{
 					client.disconnect();
 			      	done(); 
-		       }, 100)
+				});
+			});	
+		});
+
+		it('should recieve clone request', (done)=>{
+			var client = io.connect(socketURL, options);
+			var config = {
+				url: 'https://github.com/lorenzopicoli/SarkTestProj.git',
+				token: ''
+			}
+
+			client.on('connect', () =>{
+				client.emit('cloneRequest', config);
+				client.once('gitUpdate', (item)=>{
+					expect(item.type).to.equal('info');
+					client.disconnect();
+					done();
+				});
 			});	
 		});
 
@@ -97,7 +138,7 @@ describe('Sark Tests', () => {
 			var client = io.connect(socketURL, options);
 			var spy = sinon.spy();
 			var config = {
-				filename: './XcodeTest/sarktest/sarktest.xcodeproj',
+				filename: 'sarktest.xcodeproj',
 				configuration: 'Debug',
 				scheme: 'sarktest',
 				device: 'iPhone 6s',
