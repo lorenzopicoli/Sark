@@ -3,9 +3,12 @@ import { spawn } from 'child_process'
 import io from './socket'
 import fs from 'fs'
 import parser from './logParser';
+import path from 'path';
 
 const deviceListPath = './logs/deviceList.log'
 const sdkListPath = './logs/sdkList.log'
+const gitPath = path.resolve(__dirname, '../../../git/')
+
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -19,11 +22,14 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 }
 
 function executeBuild(config, socket, callback){
-	var args = createBuildArgs(config.filename, config.scheme, config.configuration, config.sdk, config.device, config.ios);
+	//Append the filename to the git path
+	var filePath =  path.resolve(gitPath, config.filename);
+	
+	var args = createBuildArgs(filePath, config.scheme, config.configuration, config.sdk, config.device, config.ios);
 	var build = spawn('xcodebuild', args);
 	var xcpretty = spawn('xcpretty');
 	build.stdout.pipe(xcpretty.stdin);
-	
+
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	xcpretty.stdout.on('data', (data) => {
 		socket.emit('updateLog', createLogItemFromData(data))
@@ -39,7 +45,7 @@ function executeBuild(config, socket, callback){
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	build.on('close', (code) => {
 		if (code !== 0) {
-			console.log(`build process exited with code ${code}`);
+			// console.log(`build process exited with code ${code}`);
 		}
 	});
 
