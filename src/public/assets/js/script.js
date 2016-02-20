@@ -11,7 +11,7 @@ socket.on('connect', () =>{
 });
 
 $('#update-git-button').click(()=>{
-  socket.emit('cloneRequest', $('#git-field').prop('value'));
+  socket.emit('cloneRequest', {url:$('#git-field').prop('value'), token:$('#token-field').prop('value')});
 });
 
 //Dropdown menu itens
@@ -58,6 +58,11 @@ socket.on('updateLog', (item)=>{
   logToScreen(item);
 });
 
+socket.on('gitUpdate', (item)=>{
+  $('#git-status').text(item.log);
+  $('#git-status').prop('class', getFontType(item));
+});
+
 function logToScreen(item){
   var logClass = getFontType(item);
   var $li = $('<li>').prop('class', 'list-group-item');
@@ -89,6 +94,7 @@ function getFontType(item){
       return "white-font";
   }
 }
+
 
 //Actions
 

@@ -89,3 +89,8 @@ div.dropdown{
   padding-left:10px;
 }
 
+span#git-status{
+  padding-top:10px;
+  font-size:0.7em;
+}
+
