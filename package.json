@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "express": "^4.13.4",
+    "nodegit": "^0.11.2",
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5"
   }
