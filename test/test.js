@@ -88,7 +88,7 @@ describe('Sark Tests', () => {
 
 			var client = io.connect(socketURL, options);
 			client.on('connect', ()=>{
-				gitManager.pull((item)=>{
+				gitManager.pull(client, (item)=>{
 					expect(item.type).to.equal('success');
 					client.disconnect();
 					done();
@@ -123,41 +123,77 @@ describe('Sark Tests', () => {
 				url: 'https://github.com/lorenzopicoli/SarkTestProj.git',
 				token: ''
 			}
-
 			client.on('connect', () =>{
-				client.emit('cloneRequest', config);
-				client.once('gitUpdate', (item)=>{
-					expect(item.type).to.equal('info');
+				client.emit('cloneRequest', config, (item)=>{
+					expect(item.type).to.equal('success');
 					client.disconnect();
-					done();
+					done();					
 				});
 			});	
 		});
 
-		it('shoud execute build command', () =>{
+		it('should recieve clean request', (done)=>{
 			var client = io.connect(socketURL, options);
-			var spy = sinon.spy();
+			var config = {
+				filename: 'sarktest.xcodeproj',
+			}
+			client.on('connect', () =>{
+				client.emit('clean', config, ()=>{
+					client.disconnect();
+					done();					
+				});
+			});	
+		});
+
+
+		it('should recieve clean build folder request', (done)=>{
+			var client = io.connect(socketURL, options);
+			var path = process.env.HOME + '/Library/Developer/Xcode/DerivedData';
+			fs.mkdir(path, ()=>{
+				client.on('connect', () =>{
+					client.emit('cleanFolder', ()=>{
+						client.disconnect();
+						done();
+					});
+				});	
+			});
+		});
+
+		it('shoud execute build command', (done) =>{
+			var client = io.connect(socketURL, options);
 			var config = {
 				filename: 'sarktest.xcodeproj',
 				configuration: 'Debug',
 				scheme: 'sarktest',
 				device: 'iPhone 6s',
-				ios: '9.2'
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
 			}
 
 			client.on('connect', () =>{
-				commands.executeBuild(config, client, spy);
-
-				client.on('updateLog', (item) =>{
-					assert(spy.callCount > 0);
-					if(item.log.indexOf('BUILD SUCCEEDED')){
-						expect(item.tpye).to.equal('');
+				commands.executeBuild(config, client, (item)=>{
+					if(item.type === 'success'){
 						client.disconnect();
 						done();
 					}
 				});
-			});	
+			});
 		});
+
+		it('shoud clean build folder', (done) =>{
+			var client = io.connect(socketURL, options);
+			var path = process.env.HOME + '/Library/Developer/Xcode/DerivedData';
+			client.on('connect', () =>{
+				commands.executeCleanBuildFolder(client, ()=>{
+					doesFileExists(path, (result) =>{
+						expect(result).to.equal(false);
+						client.disconnect();
+						console.log('done!');
+						done();
+					});
+				});
+			});
+		});		
 	});
 
 	describe('Ability to pull information', (done)=>{
