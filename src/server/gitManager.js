@@ -1,5 +1,6 @@
 var Git = require("nodegit");
 import rmdirAsync from './removeDirContent';
+import commands from './commands';
 import fs from 'fs';
 import path from 'path';
 var repository;
@@ -20,7 +21,7 @@ function clone(repo, token, callback){
 	            			// this overrides that check
 	           		 	return 1;
 	          			},
-	          			
+
 	          			/* istanbul ignore next */
 	        			credentials: function(url, userName) {
         					return Git.Cred.userpassPlaintextNew(token, "x-oauth-basic");
@@ -54,9 +55,27 @@ function clone(repo, token, callback){
 				callback = null;
 			}
 	    });
-})}
+})};
 
-function pull(callback){
+/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+function pull(socket, callback){
+process.on('uncaughtException', function(err) {
+	if(err.Error = "Could not find repository from './git/'"){
+		if(callback !== null && callback !== undefined){
+			var item = {
+				log:  "A repository was not found. Try creating one, pasting the clone URL in the first field and click on 'Update'",
+				type: 'error',
+				time: commands.getCurrentTime()
+			}
+			socket.emit('updateLog', item);
+			callback({type:'error', log:"Something went wrong, try to click on 'Update'."});
+			callback = null;
+		}
+		return;
+	}else{
+		throw err;
+	}
+})
 
 Git.Repository.open('./git/')
   .then(function(repo) {
