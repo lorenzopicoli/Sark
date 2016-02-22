@@ -169,9 +169,11 @@ describe('Sark Tests', () => {
 				ios: '9.2',
 				sdk: 'iphonesimulator9.2',
 			}
-
+			console.log('started build test');
 			client.on('connect', () =>{
+				console.log('connected to socket');
 				commands.executeBuild(config, client, (item)=>{
+					console.log(item);
 					if(item.type === 'success'){
 						client.disconnect();
 						done();
