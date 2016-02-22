@@ -8,7 +8,8 @@ var GITHUB_TOKEN;
 
 function prepareForClone(callback){
 	rmdirAsync('./git/', ()=>{
-		fs.mkdir('./git/', callback);
+		fs.mkdirSync('./git/');
+		callback();
 	});
 }
 

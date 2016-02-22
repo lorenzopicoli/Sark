@@ -64,7 +64,6 @@ function parseSdkFile(path, callback){
 		var newSdkList = sdkList.filter(function(elem, pos) {
     		return sdkList.indexOf(elem) == pos;
 		})
-		console.log(newSdkList);
 		callback(newSdkList);
 	});
 }
