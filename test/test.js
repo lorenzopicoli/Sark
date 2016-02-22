@@ -176,7 +176,7 @@ describe('Sark Tests', () => {
 				console.log('IS TRAVIS!')
 			}
 			console.log('Does sark project exists?');
-			doesFileExists('../../git/', (result)=>{
+			doesFileExists('./git/sarktest.xcodeproj', (result)=>{
 				console.log(result);
 			});
 			console.log('started build test');
