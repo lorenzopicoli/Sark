@@ -112,6 +112,27 @@ $('#build-button').click((e)=>{
   e.preventDefault();
 });
 
+$('#clean-button').click((e)=>{
+  var config = {
+    filename: $('#filename-field').prop('value'),
+    configuration: $('#config-field').prop('value'),
+    scheme: $('#scheme-field').prop('value'),
+    sdk: currentSDK,
+    device: currentDevice,
+    ios: currentiOS
+  }
+  printInfoLog("Sending clean command to server and waiting for response...");
+  socket.emit('clean', config);
+  e.preventDefault();
+});
+
+$('#clean-folder-button').click((e)=>{
+  printInfoLog("Sending clean command to server and waiting for response...");
+  socket.emit('cleanFolder');
+  e.preventDefault();
+});
+
+
 function printInfoLog(message){
   var item = {
     type: "info",
@@ -136,5 +157,6 @@ function getCurrentTime(){
   var h = addPaddingZero(date.getHours().toString());
   var m = addPaddingZero(date.getMinutes().toString());
   var s = addPaddingZero(date.getSeconds().toString());
+
   return `${h}:${m}:${s}`
 }

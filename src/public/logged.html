@@ -34,31 +34,32 @@
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <input class="input-sm form-control txt-field" type="text" placeholder="Configuration - ie. Release" id="config-field">
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <input class="input-sm form-control txt-field" type="text" placeholder="Scheme" id="scheme-field">
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <div class="dropdown" id="device-dropdown">
-                    <button class="btn btn-default dropdown-toggle center-block" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">Device model <span class="caret"></span></button>
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">Device model <span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu"></ul>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <div class="dropdown" id="ios-dropdown">
-                    <button class="btn btn-default dropdown-toggle center-block" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">iOS Version<span class="caret"></span></button>
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">iOS Version<span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu"></ul>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <div class="dropdown" id="sdk-dropdown">
-                    <button class="btn btn-default dropdown-toggle center-block" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">SDK Version<span class="caret"></span></button>
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button" id="current-dropdown-button">SDK Version<span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu"></ul>
                 </div>
             </div>
         </div>
-        <div class="btn-group btn-group-justified center-block" role="group"><a class="btn btn-default" role="button" href="#" id="build-button">Build </a><a class="btn btn-default" role="button" href="#">Run </a></div>
+        <div class="btn-group btn-group-justified center-block" role="group"><a class="btn btn-default" role="button" href="#">Run </a><a class="btn btn-default" role="button" href="#" id="build-button">Build </a><a class="btn btn-default" role="button" href="#" id="clean-button">Clean </a><a class="btn btn-default" role="button"
+            href="#" id="clean-folder-button">Clean Build Folder</a></div>
     </div>
     <div class="container"><span class="text-primary">Build logs:</span>
         <ul class="list-group" id="log-area">
