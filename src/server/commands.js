@@ -10,7 +10,7 @@ const deviceListPath = './logs/deviceList.log'
 const sdkListPath = './logs/sdkList.log'
 var gitPath = path.resolve(__dirname, '../../../git/')
 
-if(process.env.NODE_ENV == 'test'){
+if(process.env.NODE_ENV == 'test' || process.env.TRAVIS){
 	gitPath = path.resolve(__dirname, '../../git/')
 }
 

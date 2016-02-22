@@ -175,7 +175,10 @@ describe('Sark Tests', () => {
 				config.ios = '8.2';
 				console.log('IS TRAVIS!')
 			}
-
+			console.log('Does sark project exists?');
+			doesFileExists('../../git/', (result)=>{
+				console.log(result);
+			});
 			console.log('started build test');
 			client.on('connect', () =>{
 				console.log('connected to socket');
