@@ -169,6 +169,13 @@ describe('Sark Tests', () => {
 				ios: '9.2',
 				sdk: 'iphonesimulator9.2',
 			}
+
+			if (process.env.TRAVIS){
+				config.sdk = 'iphonesimulator8.1';
+				config.ios = '8.2';
+				console.log('IS TRAVIS!')
+			}
+
 			console.log('started build test');
 			client.on('connect', () =>{
 				console.log('connected to socket');
