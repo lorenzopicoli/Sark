@@ -85,7 +85,7 @@ gulp.task('test', ['babel', 'pre-test', 'set-test-env'], function () {
   return gulp.src(paths.tests)
   	.pipe(plugins.mocha({
   		compilers : { js: compiler },
-  		timeout : 120000,
+  		timeout : 180000,
   	}))
     .pipe(plugins.babelIstanbul.writeReports())
     .pipe(plugins.babelIstanbul.enforceThresholds({ thresholds: { global: 50 } }))
