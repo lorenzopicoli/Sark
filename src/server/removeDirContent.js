@@ -1,5 +1,5 @@
 var fs = require('fs');
-var rmdirAsync = function(path, callback) {
+function rmdirAsync(path, callback) {
 	fs.readdir(path, function(err, files) {
 		if(err) {
 			// Pass the error on to callback
