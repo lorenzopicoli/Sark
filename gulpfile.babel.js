@@ -63,6 +63,14 @@ gulp.task('clean', () =>{
 	return stream
 });
 
+gulp.task('set-test-env', function () {
+  plugins.env({
+    vars: {
+      NODE_ENV: 'test'
+    }
+  })
+});
+
 //******************** MAIN TASKS ************************
 
 gulp.task('dev', ['babel', 'copy', 'copy-public', 'lint'], function () {
@@ -73,7 +81,7 @@ gulp.task('dev', ['babel', 'copy', 'copy-public', 'lint'], function () {
     return stream
 })
 
-gulp.task('test', ['babel', 'pre-test'], function () {
+gulp.task('test', ['babel', 'pre-test', 'set-test-env'], function () {
   return gulp.src(paths.tests)
   	.pipe(plugins.mocha({
   		compilers : { js: compiler },
