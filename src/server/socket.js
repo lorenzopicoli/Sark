@@ -21,17 +21,26 @@ module.exports = {
 
 			socket.on('build', (config, callback) =>{
 				socket.emit('gitUpdate', {type:'info', log:"Trying to pull changes..."});
-				gitManager.pull((item)=>{
+				gitManager.pull(socket, (item)=>{
 					socket.emit('gitUpdate', item);
 					commands.executeBuild(config, socket, callback);
 				});
 			});
 
-			socket.on('cloneRequest', (item)=>{
+			socket.on('clean', (config, callback) =>{
+				commands.executeClean(config, socket, callback);
+			});
+
+			socket.on('cloneRequest', (item, callback)=>{
 				socket.emit('gitUpdate', {type:'info', log:"Starting clone request..."});
 				gitManager.clone(item.url, item.token, (item)=>{
 					socket.emit('gitUpdate', item);
+					callback(item);
 				})
+			});
+
+			socket.on('cleanFolder', (callback)=>{
+				commands.executeCleanBuildFolder(socket, callback);				
 			});
 		});
 	}
