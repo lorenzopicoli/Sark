@@ -4,11 +4,15 @@ import io from './socket'
 import fs from 'fs'
 import parser from './logParser';
 import path from 'path';
+import rmdirAsync from './removeDirContent';
 
 const deviceListPath = './logs/deviceList.log'
 const sdkListPath = './logs/sdkList.log'
-const gitPath = path.resolve(__dirname, '../../../git/')
+var gitPath = path.resolve(__dirname, '../../../git/')
 
+if(process.env.NODE_ENV == 'test'){
+	gitPath = path.resolve(__dirname, '../../git/')
+}
 
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
@@ -21,38 +25,59 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
+function createCleanArgs(filename){
+	var fileType = '-workspace';
+
+	/* istanbul ignore else*/
+	if(filename.indexOf('xcodeproj') > -1){
+		fileType = '-project';
+	}
+	return [fileType, filename, '-alltargets', 'clean', '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
+}
+
 function executeBuild(config, socket, callback){
 	//Append the filename to the git path
 	var filePath =  path.resolve(gitPath, config.filename);
-	
 	var args = createBuildArgs(filePath, config.scheme, config.configuration, config.sdk, config.device, config.ios);
 	var build = spawn('xcodebuild', args);
 	var xcpretty = spawn('xcpretty');
-	build.stdout.pipe(xcpretty.stdin);
 
-	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	xcpretty.stdout.on('data', (data) => {
-		socket.emit('updateLog', createLogItemFromData(data))
-	});
+	pipeOutputs(socket, build, xcpretty, callback);
+}
 
-	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	build.stderr.on('data', (data) => {
-		var item = createLogItemFromData(data);
-		item.type = 'error';
-		socket.emit('updateLog', item)
-	});
-
-	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
-	build.on('close', (code) => {
-		if (code !== 0) {
-			// console.log(`build process exited with code ${code}`);
-		}
-	});
+function executeClean(config, socket, callback){
+	//Append the filename to the git path
+	var filePath =  path.resolve(gitPath, config.filename);
+	var args = createCleanArgs(filePath);
+	var clean = spawn('xcodebuild', args);
+	var xcpretty = spawn('xcpretty');
+	pipeOutputs(socket, clean, xcpretty, callback);
 
 	/* istanbul ignore else*/
     if (callback !== undefined) {
     	callback();
     }
+}
+
+function executeCleanBuildFolder(socket, callback) {
+
+	socket.emit('updateLog', {
+		time: getCurrentTime(),
+		log: 'Deleting build folder...',
+		type: 'info',
+	});
+	rmdirAsync(process.env.HOME + '/Library/Developer/Xcode/DerivedData', ()=>{
+		socket.emit('updateLog', {
+			time: getCurrentTime(),
+			log: 'Cleaned build folder successfully',
+			type: 'success',
+		});
+
+		/* istanbul ignore else*/
+	    if (callback !== undefined) {
+	    	callback();
+	    }
+    });
 }
 
 function getDeviceAndiOSList(callback){
@@ -114,6 +139,40 @@ function createSdkLogFile(callback){
 	});
 }
 
+function pipeOutputs(socket, ugly, pretty, callback){
+	ugly.stdout.pipe(pretty.stdin);
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	pretty.stdout.on('data', (data) => {
+		var item = createLogItemFromData(data);
+		socket.emit('updateLog', item)
+
+		/* istanbul ignore else*/
+	    if (callback !== undefined) {
+	    	callback(item);
+	    }
+	});
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	ugly.stderr.on('data', (data) => {
+		var item = createLogItemFromData(data);
+		item.type = 'error';
+		socket.emit('updateLog', item);
+
+		/* istanbul ignore else*/
+	    if (callback !== undefined) {
+	    	callback(item);
+	    }
+	});
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	ugly.on('close', (code) => {
+		if (code !== 0) {
+			// console.log(`build process exited with code ${code}`);
+		}
+	});
+}
+
 //Helpers
 /* istanbul ignore next */
 String.prototype.replaceAll = function(search, replacement) {
@@ -145,7 +204,7 @@ function createLogItemFromData(data){
 	var type = '';
 	var time = getCurrentTime();
 
-	if(log.indexOf('Build Succeed') > -1){
+	if(log.indexOf('Succeed') > -1){
 		type = 'success';
 	}else if(log.indexOf('⚠️') > -1){
 		type = 'warning';
@@ -155,4 +214,4 @@ function createLogItemFromData(data){
 	return {log, type, time};
 }
 
-module.exports = {executeBuild, getDeviceAndiOSList, createDeviceLogFile, createSdkLogFile, deviceListPath, getSdkList, sdkListPath}
+module.exports = {executeBuild, executeClean, executeCleanBuildFolder, getDeviceAndiOSList, createDeviceLogFile, createSdkLogFile, deviceListPath, getSdkList, sdkListPath, getCurrentTime, executeCleanBuildFolder}
