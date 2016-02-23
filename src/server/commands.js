@@ -146,7 +146,7 @@ function pipeOutputs(socket, ugly, pretty, callback){
 	pretty.stdout.on('data', (data) => {
 		var item = createLogItemFromData(data);
 		socket.emit('updateLog', item)
-
+		console.log(item);
 		/* istanbul ignore else*/
 	    if (callback !== undefined) {
 	    	callback(item);
@@ -158,6 +158,7 @@ function pipeOutputs(socket, ugly, pretty, callback){
 		var item = createLogItemFromData(data);
 		item.type = 'error';
 		socket.emit('updateLog', item);
+		console.log(item);
 
 		/* istanbul ignore else*/
 	    if (callback !== undefined) {
