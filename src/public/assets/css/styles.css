@@ -94,3 +94,7 @@ span#git-status{
   font-size:0.7em;
 }
 
+button.close{
+  margin-top:-4px;
+}
+

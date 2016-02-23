@@ -63,6 +63,33 @@ socket.on('gitUpdate', (item)=>{
   $('#git-status').prop('class', getFontType(item));
 });
 
+socket.on('invalidField', (message)=>{
+  removeAlert();  
+  $('#alert-container').html('<div class="alert alert-danger fade in" role="alert">\
+                                        <button class="close alert-dismissible" type="button" data-dismiss="alert" aria-label="Close">\
+                                        <span aria-hidden="true">&times;</span>\
+                                        </button>\
+                                        <span>' + message + '</span></div>');
+//   var alert = $('<div>').prop('class', 'alert alert-danger fade in');
+//   var dismissBtn = $('<button>').prop('class', 'close');
+  
+//   dismissBtn.prop('type', 'button');
+//   dismissBtn.prop('data-dismiss', 'alert');
+//   dismissBtn.prop('aria-label', 'Close');
+//   var xLabel = $('<span>').prop('aria-hidden', 'true');
+//   xLabel.text('x');
+//   var errorMessage = $('<span>').text(message);
+//   dismissBtn.append(xLabel);
+//   $('#alert-container').append(alert);
+//   alert.append(dismissBtn);
+//   alert.append(errorMessage);
+  printErrorLog("Your request won't be processed, there was an invalid field...");
+});
+
+function removeAlert(){
+  $('#alert-container').empty();
+}
+
 function logToScreen(item){
   var logClass = getFontType(item);
   var $li = $('<li>').prop('class', 'list-group-item');
@@ -108,6 +135,7 @@ $('#build-button').click((e)=>{
     ios: currentiOS
   }
   printInfoLog("Sending build command to server and waiting for response...");
+  removeAlert();
   socket.emit('build', config);
   e.preventDefault();
 });
@@ -122,12 +150,14 @@ $('#clean-button').click((e)=>{
     ios: currentiOS
   }
   printInfoLog("Sending clean command to server and waiting for response...");
+  removeAlert();
   socket.emit('clean', config);
   e.preventDefault();
 });
 
 $('#clean-folder-button').click((e)=>{
   printInfoLog("Sending clean command to server and waiting for response...");
+  removeAlert();
   socket.emit('cleanFolder');
   e.preventDefault();
 });
@@ -136,6 +166,15 @@ $('#clean-folder-button').click((e)=>{
 function printInfoLog(message){
   var item = {
     type: "info",
+    time: getCurrentTime(),
+    log: message
+  }
+  logToScreen(item);
+}
+
+function printErrorLog(message){
+    var item = {
+    type: "error",
     time: getCurrentTime(),
     log: message
   }

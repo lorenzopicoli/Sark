@@ -34,9 +34,9 @@ module.exports = {
 
 			socket.on('build', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
-				
+
 				if(!isValid.valid){
-					socket.emit('error', isValid.error);
+					socket.emit('invalidField', isValid.error);
 				}else{
 					socket.emit('gitUpdate', {type:'info', log:"Trying to pull changes..."});
 					gitManager.pull(socket, (item)=>{
@@ -51,7 +51,7 @@ module.exports = {
 				var isValid = validation.validateConfig(config);
 
 				if(!isValid.valid){
-					socket.emit('error', isValid.error);
+					socket.emit('invalidField', isValid.error);
 				}else{
 					commands.executeClean(config, socket, callback);
 				}
