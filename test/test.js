@@ -111,9 +111,9 @@ describe('Sark Tests', () => {
 			}
 
 			if (process.env.TRAVIS){
-				config.sdk = 'iphonesimulator8.1';
-				config.ios = '8.1';
-				config.device = 'iPhone 5';
+				config.sdk = 'iphonesimulator9.2';
+				config.ios = '9.1';
+				config.device = 'iPhone 5s';
 			}
 
 			client.on('connect', () =>{
@@ -177,9 +177,9 @@ describe('Sark Tests', () => {
 				sdk: 'iphonesimulator9.2',
 			}
 			if (process.env.TRAVIS){
-				config.sdk = 'iphonesimulator8.1';
-				config.ios = '8.1';
-				config.device = 'iPhone 5';
+				config.sdk = 'iphonesimulator9.2';
+				config.ios = '9.1';
+				config.device = 'iPhone 5s';
 			}
 
 			client.on('connect', () =>{
