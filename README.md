@@ -1,7 +1,7 @@
 
 
 <p align="center">
-  <img align="center" src="/src/public/assets/img/logo.png" width="300" height="300">
+  <img align="center" src="http://i.imgur.com/kVhbYz1.jpg" width="300" height="300">
 </p>
 
 # Sark
