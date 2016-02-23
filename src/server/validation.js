@@ -13,53 +13,57 @@ var config = {
 import validator from 'validator';
 
 function validateConfig(config){
-	if (!validator.isJSON(JSON.parse(config))){
-		return {
+	if (!validator.isJSON(JSON.stringify(config))){
+		var result = {
 			valid: false, 
 			error: 'The configuration information is not in the correct format.'
-		}
-	}
+		};
 
-	if (config.filename != undefined && !validator.isAlphanumeric(config.filename)){
-		return {
+		return result;
+	}
+	if (config.filename !== undefined && !validator.matches(config.filename, /^[a-zA-Z]+[.][a-zA-Z]+$/)){
+		var result = {
 			valid: false, 
 			error: 'The filename field must contain only alphanumeric characters.'
 		}
+	
+		return result;
 	}
 
-	if (config.configuration != undefined && !validator.isAlpha(config.configuration)){
-		return {
+	if (config.configuration !== undefined && !validator.isAlpha(config.configuration)){
+		var result = {
 			valid: false, 
 			error: 'The configuration field must contain only alpha characters.'
 		}
+		
+		return result;
 	}
 
-	if(config.scheme != undefined && !validator.isAlpha(config.scheme)){
-		return {
+	if(config.scheme !== undefined && !validator.isAlpha(config.scheme)){
+		var result = {
 			valid: false, 
 			error: 'The scheme field must contain only alpha characters.'
 		}
+		
+		return result;
 	}
 
-	if(config.device != undefined && !validator.isAlphanumeric(config.devce)){
-		return {
-			valid: false, 
-			error: 'The device field must contain only alphanumeric characters.'
-		}
-	}
-
-	if(config.ios != undefined && !validator.matches(config.ios, /\d[.]\d/)){
-		return {
+	if(config.ios !== undefined && !validator.matches(config.ios, /^\d[.]\d$/)){
+		var result = {
 			valid: false, 
 			error: 'The iOS field is not in the correct format.'
 		}
+		
+		return result;
 	}
 
-	if(config.sdk != undefined && !validator.matches(config.sdk, /[a-zA-Z].+?(?=\s\(|\s\[)/g)){
-		return {
+	if(config.sdk !== undefined && !validator.matches(config.sdk, /[a-zA-Z]+\d[.]\d$/)){
+		var result = {
 			valid: false, 
 			error: 'The SDK field is not in the correct format.'
 		}
+		
+		return result;
 	}
 
 	return {

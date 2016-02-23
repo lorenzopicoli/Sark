@@ -34,7 +34,7 @@ module.exports = {
 
 			socket.on('build', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
-
+				
 				if(!isValid.valid){
 					socket.emit('error', isValid.error);
 				}else{

@@ -9,6 +9,7 @@ import socket from '../src/server/socket';
 import commands from '../src/server/commands';
 import parser from '../src/server/logParser';
 import gitManager from '../src/server/gitManager';
+import validation from '../src/server/validation';
 
 //Helper
 import httpStatus from 'http-status';
@@ -98,7 +99,6 @@ describe('Sark Tests', () => {
 	});
 
 	describe('Socket.io Communication', (done) =>{
-
 		it('should recieve build command', (done) =>{
 			var client = io.connect(socketURL, options);
 			var config = {
@@ -106,7 +106,13 @@ describe('Sark Tests', () => {
 				configuration: 'Debug',
 				scheme: 'sarktest',
 				device: 'iPhone 6s',
-				ios: '9.2'
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			}
+
+			if (process.env.TRAVIS){
+				config.sdk = 'iphonesimulator8.1';
+				config.ios = '8.2';
 			}
 
 			client.on('connect', () =>{
@@ -169,21 +175,13 @@ describe('Sark Tests', () => {
 				ios: '9.2',
 				sdk: 'iphonesimulator9.2',
 			}
-
 			if (process.env.TRAVIS){
 				config.sdk = 'iphonesimulator8.1';
 				config.ios = '8.2';
-				console.log('IS TRAVIS!')
 			}
-			console.log('Does sark project exists?');
-			doesFileExists('./git/sarktest.xcodeproj', (result)=>{
-				console.log(result);
-			});
-			console.log('started build test');
+
 			client.on('connect', () =>{
-				console.log('connected to socket');
 				commands.executeBuild(config, client, (item)=>{
-					console.log(item);
 					if(item.type === 'success'){
 						client.disconnect();
 						done();
@@ -200,7 +198,6 @@ describe('Sark Tests', () => {
 					doesFileExists(path, (result) =>{
 						expect(result).to.equal(false);
 						client.disconnect();
-						console.log('done!');
 						done();
 					});
 				});
@@ -273,6 +270,97 @@ describe('Sark Tests', () => {
 				done();
 			});
 		});
+	});
+
+	describe('Fields validation', (done)=>{
+
+		it('should succeed on a valid config file', ()=>{
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			}
+			expect(validation.validateConfig(config).valid).to.equal(true);
+		});
+
+		it('should fail on a invalid format configuration', ()=>{
+			var config = "test";
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should fail on a invalid iOS field', ()=>{
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: 'youGotHacked!',
+				sdk: 'iphonesimulator9.2',
+			};
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should fail on a invalid filename field', ()=>{
+			var config = {
+				filename: '\\@s#fg\n',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			};
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should fail on a invalid configuration field', ()=>{
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: '924De%3',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			};
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should fail on a invalid scheme field', ()=>{
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: '@sd/.\\',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			};
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should fail on a invalid SDK field', ()=>{
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'hack9.2test',
+			};
+			expect(validation.validateConfig(config).valid).to.equal(false);
+		});
+
+		it('should succed on a valid URL', ()=>{
+			var config = 'https://github.com/lorenzopicoli/SarkTestProj.git';
+			expect(validation.validateURL(config)).to.equal(true);
+		});
+
+		it('should fail on a invalid URL', ()=>{
+			var config = 'My git project . git is the file';
+			expect(validation.validateURL(config)).to.equal(false);
+		});
+
 	});
 });
 
