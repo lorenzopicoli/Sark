@@ -112,7 +112,7 @@ describe('Sark Tests', () => {
 
 			if (process.env.TRAVIS){
 				config.sdk = 'iphonesimulator8.1';
-				config.ios = '8.2';
+				config.ios = '8.1';
 				config.device = 'iPhone 5';
 			}
 
@@ -178,7 +178,7 @@ describe('Sark Tests', () => {
 			}
 			if (process.env.TRAVIS){
 				config.sdk = 'iphonesimulator8.1';
-				config.ios = '8.2';
+				config.ios = '8.1';
 				config.device = 'iPhone 5';
 			}
 
