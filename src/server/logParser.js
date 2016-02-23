@@ -38,6 +38,7 @@ function parseFile(path, callback){
 		var newDeviceList = deviceList.filter(function(elem, pos) {
     		return deviceList.indexOf(elem) == pos;
 		})
+		console.log(newDeviceList);
 		callback({ios: newiOSList, device: newDeviceList});
 	});
 }
