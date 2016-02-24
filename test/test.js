@@ -98,34 +98,6 @@ describe('Sark Tests', () => {
 		});
 	});
 
-	describe('Authentication', (done)=>{
-		it('should redirect user to homepage if try to access logged.html without being authenticated', (done)=>{
-		  	chai.request(server.app)
-		  		.get('/logged.html')
-		  		.end(function(err, res){
-		  			var redirect = '/';
-		  			var host = res.req._headers.host;
-		  			var fullHost = 'http://' + host + redirect;
-		  			expect(res.redirects).to.contain(fullHost);
-		  			done();
-		  		});
-		});
-
-		it('should redirect user to logged.html if provided the right password', (done)=>{
-		  	chai.request(server.app)
-		  		.post('/login')
-		  		.send({password: '123'})
-		  		.end(function(err, res){
-		  			var redirect = '/logged.html';
-		  			var host = res.req._headers.host;
-		  			var fullHost = 'http://' + host + redirect;
-		  			expect(res.redirects).to.contain(fullHost);
-		  			done();
-		  		});
-		});
-
-	});
-	
 	describe('Socket.io Communication', (done) =>{
 		it('should recieve build command', (done) =>{
 			var client = io.connect(socketURL, options);
@@ -235,6 +207,34 @@ describe('Sark Tests', () => {
 		});		
 	});
 
+	describe('Authentication', (done)=>{
+		it('should redirect user to homepage if try to access logged.html without being authenticated', (done)=>{
+		  	chai.request(server.app)
+		  		.get('/logged.html')
+		  		.end(function(err, res){
+		  			var redirect = '/';
+		  			var host = res.req._headers.host;
+		  			var fullHost = 'http://' + host + redirect;
+		  			expect(res.redirects).to.contain(fullHost);
+		  			done();
+		  		});
+		});
+
+		it('should redirect user to logged.html if provided the right password', (done)=>{
+		  	chai.request(server.app)
+		  		.post('/login')
+		  		.send({password: '123'})
+		  		.end(function(err, res){
+		  			var redirect = '/logged.html';
+		  			var host = res.req._headers.host;
+		  			var fullHost = 'http://' + host + redirect;
+		  			expect(res.redirects).to.contain(fullHost);
+		  			done();
+		  		});
+		});
+
+	});
+	
 	describe('Ability to pull information', (done)=>{
 
 		it('should create a new device/os log file', (done)=>{
