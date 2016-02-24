@@ -4,25 +4,27 @@ function parseFile(path, callback){
 	var lr = require('readline').createInterface({
 		input: fs.createReadStream(path)
 	});
-	var lineCount = 0;
+	var lineCount = 0; 
 	var deviceList = [];
 	var iOSList = [];
-	var deviceList = [];
 
 	lr.on('line', function (line) {
 		lineCount++;
-		if(lineCount == 1){
+		if(lineCount == 1){ //The first line is useless
 			return;
 		}
 
 		//Matches the line with the os version regex (it will match (x.x))
 		var os = line.match(/\d[.]\d/);
+		//We know that each line of the file contains only one iOS version
+		//so it's safe to get only the first match
 		if(os != null){
 			iOSList.push(os[0]);
 		}
 
 		//Matches the line with the device name regex
 		var device = line.match(/[a-zA-Z].+?(?=\s\(|\s\[)/g);
+		//Pushes any matches into deviceList
 		if(device != null){
 			device.forEach((item)=>{
 				deviceList.push(item);
