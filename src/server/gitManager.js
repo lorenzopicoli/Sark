@@ -13,7 +13,6 @@ Delete any older repo on ./git/ and create the folder again
 */
 function prepareForClone(callback){
 	rmdirAsync('./git/', ()=>{
-		fs.mkdirSync('./git/');
 		callback();
 	});
 }
