@@ -1,4 +1,4 @@
-var Git = require("nodegit");
+import Git from 'nodegit';
 import rmdirAsync from './removeDirContent';
 import commands from './commands';
 import fs from 'fs';
@@ -6,6 +6,11 @@ import path from 'path';
 var repository;
 var GITHUB_TOKEN;
 
+/*
+===========================================================
+Delete any older repo on ./git/ and create the folder again
+===========================================================
+*/
 function prepareForClone(callback){
 	rmdirAsync('./git/', ()=>{
 		fs.mkdirSync('./git/');
@@ -13,6 +18,11 @@ function prepareForClone(callback){
 	});
 }
 
+/*
+======================
+Clone repository
+======================
+*/
 function clone(repo, token, callback){
 	GITHUB_TOKEN = token;
 	var options = {fetchOpts: {
@@ -58,8 +68,14 @@ function clone(repo, token, callback){
 	    });
 })};
 
+/*
+======================
+Pull changes
+======================
+*/
 /* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 function pull(socket, callback){
+
 process.on('uncaughtException', function(err) {
 	if(err.Error = "Could not find repository from './git/'"){
 		if(callback !== null && callback !== undefined){
@@ -78,6 +94,7 @@ process.on('uncaughtException', function(err) {
 	}
 })
 
+//Try to open the repository on ./git/
 Git.Repository.open('./git/')
   .then(function(repo) {
     repository = repo;
