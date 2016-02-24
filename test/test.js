@@ -18,6 +18,8 @@ import io from 'socket.io-client';
 import sinon from 'sinon';
 import fs from 'fs';
 
+//TODO: Maybe it's a good idea to split this into multiple files
+
 chai.use(chaiHttp);
 
 var socketURL = 'http://localhost:3000';
