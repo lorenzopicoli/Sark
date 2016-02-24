@@ -6,29 +6,14 @@ var currentiOS = ''
 var currentSDK = ''
 
 
+/*
+================================
+Socket.io handlers
+=================================
+*/
+
 socket.on('connect', () =>{
 	printInfoLog("Connected successfully...");
-});
-
-$('#update-git-button').click(()=>{
-  socket.emit('cloneRequest', {url:$('#git-field').prop('value'), token:$('#token-field').prop('value')});
-});
-
-//Dropdown menu itens
-$(".dropdown-menu").on('click', 'li a', function(e){
-  $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-  $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-  
-  var id = $(this).parents('.dropdown').eq(0).prop('id')
-  
-  if(id == 'device-dropdown'){
-    currentDevice = $(this).text();
-  }else if(id == 'ios-dropdown'){
-    currentiOS = $(this).text();
-  }else{
-    currentSDK = $(this).text();                      
-  }
-  e.preventDefault();
 });
 
 socket.on('updateDeviceAndiOSList', (item)=>{
@@ -36,23 +21,12 @@ socket.on('updateDeviceAndiOSList', (item)=>{
   addListToDropdown('#device-dropdown', item.device);
   addListToDropdown('#ios-dropdown', item.ios);
   printInfoLog("We are good to go!");
-
 });
 
 socket.on('updateSdkList', (list)=>{
   printInfoLog("Updating SDK list...");
   addListToDropdown('#sdk-dropdown', list);
 });
-
-function addListToDropdown(id, list){
-  list.forEach((device)=>{
-    $(id).children('ul').eq(0).append(
-    $('<li>').append(
-    $('<a>').prop({'text':device, 'href': '#'})));
-  });
-}
-
-//Log area
 
 socket.on('updateLog', (item)=>{
   logToScreen(item);
@@ -70,60 +44,14 @@ socket.on('invalidField', (message)=>{
                                         <span aria-hidden="true">&times;</span>\
                                         </button>\
                                         <span>' + message + '</span></div>');
-//   var alert = $('<div>').prop('class', 'alert alert-danger fade in');
-//   var dismissBtn = $('<button>').prop('class', 'close');
-  
-//   dismissBtn.prop('type', 'button');
-//   dismissBtn.prop('data-dismiss', 'alert');
-//   dismissBtn.prop('aria-label', 'Close');
-//   var xLabel = $('<span>').prop('aria-hidden', 'true');
-//   xLabel.text('x');
-//   var errorMessage = $('<span>').text(message);
-//   dismissBtn.append(xLabel);
-//   $('#alert-container').append(alert);
-//   alert.append(dismissBtn);
-//   alert.append(errorMessage);
   printErrorLog("Your request won't be processed, there was an invalid field...");
 });
 
-function removeAlert(){
-  $('#alert-container').empty();
-}
-
-function logToScreen(item){
-  var logClass = getFontType(item);
-  var $li = $('<li>').prop('class', 'list-group-item');
-  var $span = $('<span>').prop('class', logClass);
-  
-  $span.text('[' + item.time + '] - ' + item.log);
-  
-  $('#log-area:last-child').append(
-  $li.append(
-  $span));
-
-  //Scroll to bottom
-  var element = $("#log-area").get(0);
-  element.scrollTop = element.scrollHeight;
-}
-
-    
-function getFontType(item){
-    switch(item.type){
-    case "success":
-      return "text-success";
-    case "error":
-      return "text-danger";
-    case "warning":
-      return "text-warning";
-    case "info":
-      return "text-info";
-    default:
-      return "white-font";
-  }
-}
-
-
-//Actions
+/*
+================================
+Button actions
+=================================
+*/
 
 $('#build-button').click((e)=>{
   var config = {
@@ -162,6 +90,76 @@ $('#clean-folder-button').click((e)=>{
   e.preventDefault();
 });
 
+$('#update-git-button').click(()=>{
+  socket.emit('cloneRequest', {url:$('#git-field').prop('value'), token:$('#token-field').prop('value')});
+});
+
+$(".dropdown-menu").on('click', 'li a', function(e){
+  $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+  $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+  
+  var id = $(this).parents('.dropdown').eq(0).prop('id')
+  
+  if(id == 'device-dropdown'){
+    currentDevice = $(this).text();
+  }else if(id == 'ios-dropdown'){
+    currentiOS = $(this).text();
+  }else{
+    currentSDK = $(this).text();                      
+  }
+  e.preventDefault();
+});
+
+
+/*
+================================
+Utils
+=================================
+*/
+
+function addListToDropdown(id, list){
+  list.forEach((device)=>{
+    $(id).children('ul').eq(0).append(
+    $('<li>').append(
+    $('<a>').prop({'text':device, 'href': '#'})));
+  });
+}
+
+function removeAlert(){
+  $('#alert-container').empty();
+}
+
+function logToScreen(item){
+  var logClass = getFontType(item);
+  var $li = $('<li>').prop('class', 'list-group-item');
+  var $span = $('<span>').prop('class', logClass);
+  
+  $span.text('[' + item.time + '] - ' + item.log);
+  
+  $('#log-area:last-child').append(
+  $li.append(
+  $span));
+
+  //Scroll to bottom
+  var element = $("#log-area").get(0);
+  element.scrollTop = element.scrollHeight;
+}
+
+    
+function getFontType(item){
+    switch(item.type){
+    case "success":
+      return "text-success";
+    case "error":
+      return "text-danger";
+    case "warning":
+      return "text-warning";
+    case "info":
+      return "text-info";
+    default:
+      return "white-font";
+  }
+}
 
 function printInfoLog(message){
   var item = {
@@ -180,8 +178,6 @@ function printErrorLog(message){
   }
   logToScreen(item);
 }
-
-//Helper
 
 function addPaddingZero(numberString){
   if(numberString.length < 2){
