@@ -6,14 +6,22 @@ import parser from './logParser';
 import path from 'path';
 import rmdirAsync from './removeDirContent';
 
+/*
+================================
+Constants
+=================================
+*/
 const deviceListPath = './logs/deviceList.log'
 const sdkListPath = './logs/sdkList.log'
+
+//Git path is not a constant because the relative path is different when testing
 var gitPath = path.resolve(__dirname, '../../../git/')
 
 if(process.env.NODE_ENV == 'test' || process.env.TRAVIS){
 	gitPath = path.resolve(__dirname, '../../git/')
 }
 
+//Creates spawn's arguments for build action
 function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	var fileType = '-workspace';
 
@@ -25,6 +33,7 @@ function createBuildArgs(filename, scheme, configuration, sdk, device, os){
 	return [fileType, filename, '-scheme', scheme, '-configuration', configuration, '-sdk', sdk, '-destination', `name=${device},OS=${os}`, '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
+//Creates spawn's arguments for clean action
 function createCleanArgs(filename){
 	var fileType = '-workspace';
 
@@ -35,6 +44,20 @@ function createCleanArgs(filename){
 	return [fileType, filename, '-alltargets', 'clean', '-IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4']
 }
 
+/*
+================================================================
+Main function for BUILDING
+The argument config must have the following format:
+{
+	filename: file.xcodeproj [or .xcworkspace],
+	scheme: myScheme,
+	configuration: Debug [or Release],
+	sdk: iphonesimulator9.2,
+	device: iPhone 6s,
+	ios: 9.2
+}
+=================================================================
+*/
 function executeBuild(config, socket, callback){
 	//Append the filename to the git path
 	var filePath =  path.resolve(gitPath, config.filename);
@@ -42,9 +65,19 @@ function executeBuild(config, socket, callback){
 	var build = spawn('xcodebuild', args);
 	var xcpretty = spawn('xcpretty');
 
+	//pipeOutputs sets build stdout to xcpretty and send every new data to client
 	pipeOutputs(socket, build, xcpretty, callback);
 }
 
+/*
+================================================================
+Main function for CLEANING
+The argument config must have the following format:
+{
+	filename: file.xcodeproj [or .xcworkspace]
+}
+=================================================================
+*/
 function executeClean(config, socket, callback){
 	//Append the filename to the git path
 	var filePath =  path.resolve(gitPath, config.filename);
@@ -59,6 +92,11 @@ function executeClean(config, socket, callback){
     }
 }
 
+/*
+================================================================
+Main function for CLEANING BUILD FOLDER
+=================================================================
+*/
 function executeCleanBuildFolder(socket, callback) {
 
 	socket.emit('updateLog', {
@@ -80,6 +118,14 @@ function executeCleanBuildFolder(socket, callback) {
     });
 }
 
+/*
+========================================
+Get the device and iOS list by:
+- Deleting any old log files
+- Retrieving new data
+- Parsing the data
+========================================
+*/
 function getDeviceAndiOSList(callback){
 
 	fs.access(deviceListPath, fs.F_OK, function(err) {
@@ -99,6 +145,14 @@ function getDeviceAndiOSList(callback){
 	})
 }
 
+/*
+========================================
+Get the sdk list by:
+- Deleting any old log files
+- Retrieving new data
+- Parsing the data
+========================================
+*/
 function getSdkList(callback){
 	fs.access(sdkListPath, fs.F_OK, function(err) {
 	    if (!err) {
@@ -117,6 +171,11 @@ function getSdkList(callback){
 	})
 }
 
+/*
+================================================
+Simply use spawn to get the device / os log file
+================================================
+*/
 function createDeviceLogFile(callback){
 	var xcrun = spawn('xcrun', ['instruments', '-s']);
 	var logStream = fs.createWriteStream(deviceListPath, {flags: 'a'});
@@ -128,6 +187,11 @@ function createDeviceLogFile(callback){
 	});
 }
 
+/*
+================================================
+Simply use spawn to get the sdk log file
+================================================
+*/
 function createSdkLogFile(callback){
 	var xcodebuild = spawn('xcodebuild', ['-showsdks']);
 	var logStream = fs.createWriteStream(sdkListPath, {flags: 'a'});
@@ -139,6 +203,15 @@ function createSdkLogFile(callback){
 	});
 }
 
+/*
+================================================
+This is a helper function that takes:
+'socket' - Used for sending new data to client
+'ugly' - raw xcodebuild data
+'pretty' - xcpretty stream to pipe the ugly data
+'callback' - Used for testing and result
+================================================
+*/
 function pipeOutputs(socket, ugly, pretty, callback){
 	ugly.stdout.pipe(pretty.stdin);
 
@@ -172,7 +245,11 @@ function pipeOutputs(socket, ugly, pretty, callback){
 	});
 }
 
-//Helpers
+/*
+=============
+Helpers
+=============
+*/
 /* istanbul ignore next */
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
