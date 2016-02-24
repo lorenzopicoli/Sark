@@ -102,7 +102,7 @@ function logToScreen(item){
   $span));
 
   //Scroll to bottom
-  var element = document.getElementById("log-area");
+  var element = $("#log-area").get(0);
   element.scrollTop = element.scrollHeight;
 }
 

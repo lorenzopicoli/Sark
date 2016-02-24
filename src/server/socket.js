@@ -2,7 +2,6 @@ import commands from './commands'
 import gitManager from './gitManager'
 import validation from './validation'
 
-var isClientConnected = false;
 
 /* Config file example */
 /*
@@ -17,12 +16,8 @@ var config = {
 */
 
 module.exports = {
-	isClientConnected: ()=>{
-		return isClientConnected;
-	},
 	setupListeners: (io) =>{
 		io.on('connection', (socket) =>{
-			isClientConnected = true;
 
 			commands.getDeviceAndiOSList((item)=>{
 				socket.emit('updateDeviceAndiOSList', item);
@@ -34,7 +29,6 @@ module.exports = {
 
 			socket.on('build', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
-
 				if(!isValid.valid){
 					socket.emit('invalidField', isValid.error);
 				}else{

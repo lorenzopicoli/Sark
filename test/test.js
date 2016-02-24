@@ -64,7 +64,6 @@ describe('Sark Tests', () => {
 			var client = io.connect(socketURL, options);
 
 		    client.on('connect',function(){
-				expect(socket.isClientConnected()).to.equal(true);
 				client.disconnect();
 		      	done(); 
 		    });

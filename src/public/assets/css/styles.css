@@ -98,3 +98,12 @@ button.close{
   margin-top:-4px;
 }
 
+.top-margin-button{
+  margin-top:30px;
+}
+
+span.text-danger.center-block{
+  text-align:center;
+  font-size:0.7em;
+}
+
