@@ -19,6 +19,11 @@ module.exports = {
 	setupListeners: (io) =>{
 		io.on('connection', (socket) =>{
 
+			/*
+			======================================================
+			Setup the new client by retrieving sdk/ios/device list
+			======================================================
+			*/
 			commands.getDeviceAndiOSList((item)=>{
 				socket.emit('updateDeviceAndiOSList', item);
 			});
@@ -27,6 +32,11 @@ module.exports = {
 				socket.emit('updateSdkList', list);
 			});
 
+			/*
+			=================================
+			Build handler
+			=================================
+			*/
 			socket.on('build', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
 				if(!isValid.valid){
@@ -41,6 +51,11 @@ module.exports = {
 				
 			});
 
+			/*
+			=================================
+			Clean handler
+			=================================
+			*/
 			socket.on('clean', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
 
@@ -51,6 +66,20 @@ module.exports = {
 				}
 			});
 
+			/*
+			=================================
+			Clean folder handler
+			=================================
+			*/
+			socket.on('cleanFolder', (callback)=>{
+				commands.executeCleanBuildFolder(socket, callback);				
+			});
+
+			/*
+			=================================
+			Clone handler
+			=================================
+			*/
 			socket.on('cloneRequest', (item, callback)=>{
 				var isValid = validation.validateURL(item.url);
 
@@ -65,10 +94,6 @@ module.exports = {
 						}
 					})
 				}
-			});
-
-			socket.on('cleanFolder', (callback)=>{
-				commands.executeCleanBuildFolder(socket, callback);				
 			});
 		});
 	}
