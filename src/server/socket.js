@@ -53,9 +53,30 @@ module.exports = {
 
 			/*
 			=================================
+			Build handler
+			=================================
+			*/
+			/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+			socket.on('run', (config, callback) =>{
+				var isValid = validation.validateConfig(config);
+				if(!isValid.valid){
+					socket.emit('invalidField', isValid.error);
+				}else{
+					socket.emit('gitUpdate', {type:'info', log:"Trying to pull changes..."});
+					gitManager.pull(socket, (item)=>{
+						socket.emit('gitUpdate', item);
+						commands.executeRun(config, socket, callback);
+					});
+				}
+				
+			});
+
+			/*
+			=================================
 			Clean handler
 			=================================
 			*/
+			/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 			socket.on('clean', (config, callback) =>{
 				var isValid = validation.validateConfig(config);
 
@@ -71,6 +92,7 @@ module.exports = {
 			Clean folder handler
 			=================================
 			*/
+			/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 			socket.on('cleanFolder', (callback)=>{
 				commands.executeCleanBuildFolder(socket, callback);				
 			});
@@ -80,6 +102,7 @@ module.exports = {
 			Clone handler
 			=================================
 			*/
+			/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 			socket.on('cloneRequest', (item, callback)=>{
 				var isValid = validation.validateURL(item.url);
 

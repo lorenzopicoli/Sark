@@ -3,8 +3,10 @@ import { spawn } from 'child_process'
 import io from './socket'
 import fs from 'fs'
 import parser from './logParser';
+import help from './helperFunctions';
 import path from 'path';
 import rmdirAsync from './removeDirContent';
+import simulator from './simulatorCommands';
 
 /*
 ================================
@@ -71,6 +73,35 @@ function executeBuild(config, socket, callback){
 
 /*
 ================================================================
+Main function for RUNNING
+The argument config must have the following format:
+{
+	filename: file.xcodeproj [or .xcworkspace],
+	scheme: myScheme,
+	configuration: Debug [or Release],
+	sdk: iphonesimulator9.2,
+	device: iPhone 6s,
+	ios: 9.2
+}
+=================================================================
+*/
+function executeRun(config, socket, callback){
+	executeCleanBuildFolder(socket, ()=>{
+		buildAndGetAppPath(config, socket, (appPath)=>{
+			if(appPath !== ''){
+				simulator.openSimulator(config.device, config.ios, socket, ()=>{
+					simulator.installApp(appPath, socket, ()=>{
+						simulator.runApp(appPath, socket, ()=>{
+						});
+					});
+				});
+			}
+		});
+	});
+}
+
+/*
+================================================================
 Main function for CLEANING
 The argument config must have the following format:
 {
@@ -100,13 +131,13 @@ Main function for CLEANING BUILD FOLDER
 function executeCleanBuildFolder(socket, callback) {
 
 	socket.emit('updateLog', {
-		time: getCurrentTime(),
+		time: help.getCurrentTime(),
 		log: 'Deleting build folder...',
 		type: 'info',
 	});
 	rmdirAsync(process.env.HOME + '/Library/Developer/Xcode/DerivedData', ()=>{
 		socket.emit('updateLog', {
-			time: getCurrentTime(),
+			time: help.getCurrentTime(),
 			log: 'Cleaned build folder successfully',
 			type: 'success',
 		});
@@ -217,7 +248,7 @@ function pipeOutputs(socket, ugly, pretty, callback){
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	pretty.stdout.on('data', (data) => {
-		var item = createLogItemFromData(data);
+		var item = help.createLogItemFromData(data);
 		socket.emit('updateLog', item)
 		/* istanbul ignore else*/
 	    if (callback !== undefined) {
@@ -227,7 +258,7 @@ function pipeOutputs(socket, ugly, pretty, callback){
 
 	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
 	ugly.stderr.on('data', (data) => {
-		var item = createLogItemFromData(data);
+		var item = help.createLogItemFromData(data);
 		item.type = 'error';
 		socket.emit('updateLog', item);
 
@@ -250,44 +281,60 @@ function pipeOutputs(socket, ugly, pretty, callback){
 Helpers
 =============
 */
-/* istanbul ignore next */
-String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.split(search).join(replacement);
-};
 
-/* istanbul ignore next */
-function addPaddingZero(numberString){
-	if(numberString.length < 2){
-		return '0' + numberString;
-	}else{
-		return numberString;
-	}
+
+/*
+===============================================================
+This function build the app passed in the config variable and
+calls the callback with the path of the .app builded
+(Helpful when running the app!)
+===============================================================
+*/
+function buildAndGetAppPath(config, socket, callback){
+	//Append the filename to the git path
+	var filePath =  path.resolve(gitPath, config.filename);
+	var args = createBuildArgs(filePath, config.scheme, config.configuration, config.sdk, config.device, config.ios);
+	var build = spawn('xcodebuild', args);
+	var xcpretty = spawn('xcpretty');
+	var finalPath = '';
+
+	build.stdout.pipe(xcpretty.stdin);
+
+	build.stdout.on('data', (data)=>{
+		var stringData = data.toString('utf8');
+		if(stringData.indexOf('/Library/Developer/Xcode/DerivedData/') > -1){
+			var path = stringData.match(/(\/usr\/bin\/touch -c \/U).+?(?=\n)/g);
+			if(path !== null){
+				finalPath = path[0].replaceAll('/usr/bin/touch -c ', '');
+			}
+		}
+	});
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	xcpretty.stdout.on('data', (data) => {
+		var item = help.createLogItemFromData(data);
+		socket.emit('updateLog', item)
+	});
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	build.stderr.on('data', (data) => {
+		var item = help.createLogItemFromData(data);
+		item.type = 'error';
+		socket.emit('updateLog', item);
+	});
+
+	/* istanbul ignore next: Istanbul for some reason doesn't cover this, but it's being tested */
+	build.on('close', (code) => {
+		if (finalPath === ''){
+			socket.emit('updateLog', {time: help.getCurrentTime(), type: 'error', log: `There was a problem when trying to get the app path.`});
+		}else{
+			socket.emit('updateLog', {time: help.getCurrentTime(), type: 'success', log: `Found path of builded app: ${finalPath}`});
+		}
+		callback(finalPath);
+		if (code !== 0) {
+			// console.log(`build process exited with code ${code}`);
+		}
+	});
 }
 
-/* istanbul ignore next */
-function getCurrentTime(){
-	var date = new Date();
-	var h = addPaddingZero(date.getHours().toString());
-	var m = addPaddingZero(date.getMinutes().toString());
-	var s = addPaddingZero(date.getSeconds().toString());
-	return `${h}:${m}:${s}`
-}
-
-/* istanbul ignore next */
-function createLogItemFromData(data){
-	var log = data.toString('utf8') + '...';
-	var type = '';
-	var time = getCurrentTime();
-
-	if(log.indexOf('Succeed') > -1){
-		type = 'success';
-	}else if(log.indexOf('⚠️') > -1){
-		type = 'warning';
-	}else if(log.indexOf('❌') > -1){
-		type = 'error';
-	}
-	return {log, type, time};
-}
-
-module.exports = {executeBuild, executeClean, executeCleanBuildFolder, getDeviceAndiOSList, createDeviceLogFile, createSdkLogFile, deviceListPath, getSdkList, sdkListPath, getCurrentTime, executeCleanBuildFolder}
+module.exports = {executeBuild, executeRun, executeClean, executeCleanBuildFolder, getDeviceAndiOSList, createDeviceLogFile, createSdkLogFile, deviceListPath, getSdkList, sdkListPath, executeCleanBuildFolder, buildAndGetAppPath}

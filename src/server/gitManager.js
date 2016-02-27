@@ -3,6 +3,8 @@ import rmdirAsync from './removeDirContent';
 import commands from './commands';
 import fs from 'fs';
 import path from 'path';
+import help from './helperFunctions';
+
 var repository;
 var GITHUB_TOKEN;
 
@@ -81,7 +83,7 @@ process.on('uncaughtException', function(err) {
 			var item = {
 				log:  "A repository was not found. Try creating one, pasting the clone URL in the first field and click on 'Update'",
 				type: 'error',
-				time: commands.getCurrentTime()
+				time: help.getCurrentTime()
 			}
 			socket.emit('updateLog', item);
 			callback({type:'error', log:"Something went wrong, try to click on 'Update'."});
