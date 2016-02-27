@@ -5,7 +5,6 @@
 </p>
 
 # Sark
-[![Build Status](https://travis-ci.org/lorenzopicoli/Sark.svg?branch=master)](https://travis-ci.org/lorenzopicoli/Sark) [![Coverage Status](https://coveralls.io/repos/github/lorenzopicoli/Sark/badge.svg?branch=master)](https://coveralls.io/github/lorenzopicoli/Sark?branch=master)
 
 Sark is an application that helps you build an XCode project in your Macbook/iMac from any OS without the use of any applications such as Team Viewer.
 
