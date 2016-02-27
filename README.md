@@ -12,6 +12,7 @@ Sark is an application that helps you build an XCode project in your Macbook/iMa
 
 ## What does Sark needs to run?
 
+- A Mac running OSX with Xcode installed (duh!)
 - [XCPretty](https://github.com/supermarin/xcpretty)
 - [Node/NPM](https://nodejs.org/en/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) with [cached credentials](https://help.github.com/articles/caching-your-github-password-in-git/)
