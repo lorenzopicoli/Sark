@@ -4,6 +4,8 @@
   <img align="center" src="http://i.imgur.com/kVhbYz1.jpg" width="300" height="300">
 </p>
 
+#WARNING: Even though Sark is usable it's under heavy development, you can help by reporting any issue (see FAQ).
+
 # Sark
 
 Sark is an application that helps you build an XCode project in your Macbook/iMac from any OS without the use of any applications. All you need is to setup your Mac and open a browser anywhere!
@@ -15,8 +17,6 @@ Using Sark those people will be able to edit their project using a native applic
 ##How does it works?
 
 If you follow along the usage instructions you'll notice that Sark is a Node.js server that is suppose to run on a Mac machine and be accecible through the internet. The server will execute commands and use Socket.io to communicate with the client.
-
-#WARNING: Even though Sark is usable it's under heavy development, you can help by reporting any issue (see FAQ).
 
 ## What does Sark needs to run?
 
@@ -89,6 +89,3 @@ This should get you up and running!
 
 #### But don't you use Coveralls?
 - Run the tests locally and you'll see the coverage status.
-
-
-
