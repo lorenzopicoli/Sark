@@ -7,6 +7,7 @@ import chaiHttp from 'chai-http';
 import server from '../src/index';
 import socket from '../src/server/socket';
 import commands from '../src/server/commands';
+import simulator from '../src/server/simulatorCommands';
 import parser from '../src/server/logParser';
 import gitManager from '../src/server/gitManager';
 import validation from '../src/server/validation';
@@ -390,6 +391,100 @@ describe('Sark Tests', () => {
 			var config = 'My git project . git is the file';
 			expect(validation.validateURL(config)).to.equal(false);
 		});
+
+	describe('Simulator commands', (done)=>{
+		it('should open the simulator', (done)=>{
+			var client = io.connect(socketURL, options);
+
+			client.on('connect', ()=>{
+				simulator.openSimulator('iPhone 5s', '9.2', client, ()=>{
+					//Not sure how to test this to I'll be happy with the 
+					//callback being called
+					client.disconnect();
+					done();
+				});
+			});
+		  	
+		});
+
+		it('should install a given app', (done)=>{
+			var client = io.connect(socketURL, options);
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			}
+
+			if (process.env.TRAVIS){
+				config.sdk = 'iphonesimulator9.2';
+				config.ios = '9.1';
+				config.device = 'iPhone 5s';
+			}
+
+			client.on('connect', ()=>{
+				commands.executeCleanBuildFolder(client, ()=>{
+					commands.buildAndGetAppPath(config, client, (path)=>{
+						expect(path).to.not.equal('');
+
+						simulator.installApp(path, client, ()=>{
+							//Not sure how to test this to I'll be happy with the 
+							//callback being called
+							client.disconnect();
+							done();
+						});
+					})
+				})
+			});
+		});
+
+		it('should get an app bundle id', (done)=>{
+			var client = io.connect(socketURL, options);
+			client.on('connect', ()=>{
+				simulator.getBundleId('/Applications/Xcode.app/Contents', client, (id)=>{
+					expect(id).to.equal('com.apple.dt.Xcode')
+					client.disconnect();
+					done();
+				});
+			});
+		});
+
+		it('should run a given app', (done)=>{
+			var client = io.connect(socketURL, options);
+			var config = {
+				filename: 'sarktest.xcodeproj',
+				configuration: 'Debug',
+				scheme: 'sarktest',
+				device: 'iPhone 6s',
+				ios: '9.2',
+				sdk: 'iphonesimulator9.2',
+			}
+
+			if (process.env.TRAVIS){
+				config.sdk = 'iphonesimulator9.2';
+				config.ios = '9.1';
+				config.device = 'iPhone 5s';
+			}
+
+			client.on('connect', ()=>{
+				commands.executeCleanBuildFolder(client, ()=>{
+					commands.buildAndGetAppPath(config, client, (path)=>{
+						simulator.installApp(path, client, ()=>{
+							simulator.runApp(path, client, ()=>{
+								//Not sure how to test this to I'll be happy with the 
+								//callback being called
+								client.disconnect();
+								done();
+							});
+						})
+					})
+				})
+			});			
+		});
+
+	});
 
 	});
 });
