@@ -1,6 +1,6 @@
 printInfoLog("Attemping to connect...");
 
-var socket = io.connect("http://192.168.25.8:3000");
+var socket = io.connect("http://localhost:3000");
 var currentDevice = ''
 var currentiOS = ''
 var currentSDK = ''
@@ -82,6 +82,22 @@ $('#clean-button').click((e)=>{
   socket.emit('clean', config);
   e.preventDefault();
 });
+
+$('#run-button').click((e)=>{
+  var config = {
+    filename: $('#filename-field').prop('value'),
+    configuration: $('#config-field').prop('value'),
+    scheme: $('#scheme-field').prop('value'),
+    sdk: currentSDK,
+    device: currentDevice,
+    ios: currentiOS
+  }
+  printInfoLog("Sending run command to server and waiting for response...");
+  removeAlert();
+  socket.emit('run', config);
+  e.preventDefault();
+});
+
 
 $('#clean-folder-button').click((e)=>{
   printInfoLog("Sending clean command to server and waiting for response...");
