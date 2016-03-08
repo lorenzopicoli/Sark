@@ -4,7 +4,6 @@
   <img align="center" src="http://i.imgur.com/kVhbYz1.jpg" width="300" height="300">
 </p>
 
-#WARNING: Even though Sark is usable it's under heavy development, you can help by reporting any issue (see FAQ).
 
 # Sark
 
@@ -25,9 +24,7 @@ If you follow along the usage instructions you'll notice that Sark is a Node.js 
 - [Node/NPM](https://nodejs.org/en/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) with [cached credentials](https://help.github.com/articles/caching-your-github-password-in-git/)
 
-## How to?
-
-### Use
+## How to use?
 
 #### Downloading
 
@@ -35,25 +32,40 @@ If you follow along the usage instructions you'll notice that Sark is a Node.js 
 - Uncompress the downloaded zip
 - Open terminal and [navigate to the folder created](http://stackoverflow.com/questions/9547730/how-to-navigate-to-to-different-directories-in-the-terminal-mac)
 
-#### Configuring
+#### Running the server
 
 - Leave the terminal window open, but also open Finder
 - Navigate to the created folder (uncompressed)
 - Open the file "config.json". You can open it with any text editor.
 - Change "123" to your desired password
-- Navigate to /src/public/assets/js/ and open "script.js", we'll use that in a moment.
+- Type on terminal: 
+```javascript
+  gulp dev
+```
+
+Now you server is up and running. If you go to localhost:3000 you should get the Sark's homepage. But you can't access from anywhere, so you'll need to...
 
 #### Make your Mac accessible from anywhere
 
-TODO: Insert NoIP configuration here
+I like to use NoIP for a easy (and free) way to remember my iMac address.
+- [Create a NoIP account](https://www.noip.com/)
+- [Download the OSX client](https://www.noip.com/download?page=mac)
+- [Add a new host](https://www.noip.com/members/dns/host.php) (your Mac). (Almost) Like this:
 
-#### Running the server
-- Type: npm install
+<p align="center">
+  <img align="center" src="http://i.imgur.com/4479ltS.png">
+</p>
+
+- Open the NoIP app that you've downloaded and go to the hosts tab
+- Select the host you've created before
 
 
 This should get you up and running!
 
-### Run test
+## I want to contribute!
+Thank you, here are some stuff that might help you:
+
+#### Run test
 
 - Mocha
 - Istanbul
@@ -63,7 +75,7 @@ This should get you up and running!
 > gulp test
 ```
 
-### Run the server as development
+#### Run the server as development (the same as running the server for now)
 
 - Babel
 - Copy package.json to /dist
