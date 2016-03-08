@@ -47,7 +47,7 @@ Now you server is up and running. If you go to localhost:3000 you should get the
 
 #### Make your Mac accessible from anywhere
 
-I like to use NoIP for a easy (and free) way to remember my iMac address.
+I like to use NoIP for a easy (and free) way to remember my iMac IP address.
 - [Create a NoIP account](https://www.noip.com/)
 - [Download the OSX client](https://www.noip.com/download?page=mac)
 - [Add a new host](https://www.noip.com/members/dns/host.php) (your Mac). (Almost) Like this:
