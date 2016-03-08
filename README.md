@@ -17,6 +17,12 @@ Using Sark those people will be able to edit their project using a native applic
 
 If you follow along the usage instructions you'll notice that Sark is a Node.js server that is suppose to run on a Mac machine and be accecible through the internet. The server will execute commands and use Socket.io to communicate with the client.
 
+## Usage example
+
+<p align="center">
+  <img align="center" src="http://i.imgur.com/Fei6XC7.png">
+</p>
+
 ## What does Sark needs to run?
 
 - A Mac running OSX with Xcode installed (duh!)
