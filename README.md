@@ -58,7 +58,7 @@ I like to use NoIP for a easy (and free) way to remember my iMac IP address.
 
 - Open the NoIP app that you've downloaded and go to the hosts tab
 - Select the host you've created before
-
+- [Configure your router to do port fowarding](http://www.noip.com/support/knowledgebase/general-port-forwarding-guide/)
 
 This should get you up and running!
 
