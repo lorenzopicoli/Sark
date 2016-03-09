@@ -1,6 +1,8 @@
 ---
 layout: index
 ---
+
+
 <p align="center">
   <img align="center" src="http://i.imgur.com/kVhbYz1.jpg" width="300" height="300">
 </p>
@@ -14,9 +16,9 @@ Sark is an application that helps you build an XCode project in your Macbook/iMa
 The goal of this application is not to replace Xcode or to compete with Macbooks, we aim to help young programmers who have an iMac or know someone who does and can't afford a Macbook, we aim to help those who for some reason need to edit and test Xcode projects, but forgot their Macbook at home.
 Using Sark those people will be able to edit their project using a native application like Sublime Text using all of their computer speed and confort without needing to rely on a fast internet connection to remote access their Macs.
 
-## How does it works?
-
-If you follow along the usage instructions you'll notice that Sark is a Node.js server that is suppose to run on a Mac machine and be accecible through the internet. The server will execute commands and use Socket.io to communicate with the client.
+##How does it work?
+  
+If you follow along the usage instructions you'll notice that Sark is a Node.js server that is supposed to run on a Mac machine and be accecible through the internet. The server will execute commands and use Socket.io to communicate with the client.
 
 ## Usage example
 
@@ -50,7 +52,7 @@ If you follow along the usage instructions you'll notice that Sark is a Node.js 
   gulp dev
 ```
 
-Now you server is up and running. If you go to localhost:3000 you should get the Sark's homepage. But you can't access from anywhere, so you'll need to...
+Now your server is up and running. If you go to localhost:3000 you should get the Sark's homepage. But you can't access from anywhere, so you'll need to...
 
 #### Make your Mac accessible from anywhere
 
@@ -108,4 +110,3 @@ Thank you, here are some stuff that might help you:
 
 #### But don't you use Coveralls?
 - Run the tests locally and you'll see the coverage status.
-
