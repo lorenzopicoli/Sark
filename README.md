@@ -10,12 +10,12 @@
 Sark is an application that helps you build an Xcode project on your Mac from any OS without the use of any applications. All you need to do is set up your Mac and open a browser!
 
 
-The goal of this application is not to replace Xcode or to compete with Macs. Instead, we aim to help young programmers who have an iMac or know someone who does and can't afford a Macbook. We aim to help those who for some reason need to edit and test Xcode projects, but forgot their Macbook at home.
-Using Sark, those people will be able to edit their project using a native application like Sublime Text, using all of their computer's speed efficiently without needing to rely on a fast internet connection to remotely access their Macs.
+The goal of this application is not to replace Xcode or to compete with Macs. Instead, we aim to help young programmers who have an iMac or know someone who does and can't afford a Macbook. We aim to help those who, for some reason, need to edit and test Xcode projects, but forgot their Macbook at home.
+Using Sark, those people will be able to edit their project using a native application like Sublime Text, using all of their computer's speed efficiently without needing to rely on a fast internet connection to remotely access their Mac.
 
 ## How does it work?
 
-If you follow along the usage instructions you'll notice that Sark is a Node.js server that runs on a Mac that should be accessible through the Internet. The server will execute commands and use Socket.io to communicate with the client.
+If you follow along the usage instructions, you'll notice that Sark is a Node.js server that runs on a Mac that should be accessible through the Internet. The server will execute commands and use Socket.io to communicate with the client.
 
 ## Usage example
 
